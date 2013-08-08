@@ -15,6 +15,9 @@ namespace IntelligentRobots.Grid
     {
         private GridTrunk _trunk;
 
+
+        public GridTrunk Trunk { get { return _trunk; } }
+
         public GridManager(AtlasGlobal atlas)
             : base(atlas)
         {

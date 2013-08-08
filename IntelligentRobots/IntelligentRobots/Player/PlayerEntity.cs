@@ -14,17 +14,26 @@ namespace IntelligentRobots.Player
 {
     public class PlayerEntity : Entities.Entity
     {
+        private bool _crouching;
         private float _radius;
+        private Vector2 _position;
+        private Vector2 _velocity;
+
+        public override bool Crouching { get { return _crouching; } }
         public override float Radius { get { return _radius; } }
+        public override Vector2 Position { get { return _position; } }
+        public override Vector2 Velocity { get { return _velocity; } }
+
+        
 
 
         public PlayerEntity(AtlasGlobal atlas, float radius)
-            : base(atlas)
+            : base(atlas, null)
         {
             _radius = radius;
         }
 
-        public void Update()
+        protected override void Update()
         {
             var cm = Atlas.GetManager<CameraManager>();
             Vector2 v = Vector2.Zero;
@@ -38,9 +47,9 @@ namespace IntelligentRobots.Player
             if (keys.IsKeyJustPressed(Keys.Tab))
                 _radius = (_radius + 8) % 48;
 
-            crouching = !keys.IsKeyDown(Keys.LeftControl);
+            _crouching = !keys.IsKeyDown(Keys.LeftControl);
 
-            float speed = crouching ? 1 : 0.4f;
+            float speed = _crouching ? 1 : 0.4f;
 
             if (v.LengthSquared() > speed * speed)
             {
@@ -49,16 +58,8 @@ namespace IntelligentRobots.Player
                 v = v * speed;
             }
 
-            velocity += (v - velocity) * (8 * Atlas.Elapsed);
-            position += velocity * (256 * Atlas.Elapsed);
-        }
-
-        public void Draw()
-        {
-            Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("blop"),
-                position, null,
-                Color.Blue, Vector2.One * 16,
-                0, Radius / 16);
+            _velocity += (v - _velocity) * (8 * Atlas.Elapsed);
+            _position += _velocity * (256 * Atlas.Elapsed);
         }
     }
 }

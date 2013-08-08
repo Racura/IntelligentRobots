@@ -30,7 +30,7 @@ namespace IntelligentRobots.Player
             var cm = Atlas.GetManager<CameraManager>();
             var gm = Atlas.GetManager<Grid.GridManager>();
 
-            _entity.Update();
+            _entity.Logic(gm.Trunk);
 
             gm.MapCollide(_entity);
             cm.LookAt(10, _entity.Position, 450, 5, 1);

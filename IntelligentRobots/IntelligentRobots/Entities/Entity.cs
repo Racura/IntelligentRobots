@@ -49,17 +49,26 @@ namespace IntelligentRobots.Entities
             return new EntityStruct(this);
         }
 
-        public void Update(Grid.GridTrunk trunk)
+        public void Logic(Grid.GridTrunk trunk)
         {
-            _delegate.Update(this, trunk);
+            //_delegate.Update(this, trunk);
 
-            
+            Update();
         }
 
         protected virtual void Update()
         {
 
         }
+
+        public virtual void Draw()
+        {
+            Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("blop"),
+                Position, null,
+                Color.Blue, Vector2.One * 16,
+                (float)Math.Atan2(Direction.Y, Direction.X), Radius / 16);
+        }
+
     }
 
     public struct EntityStruct

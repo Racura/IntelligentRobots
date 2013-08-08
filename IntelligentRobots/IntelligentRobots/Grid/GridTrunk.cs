@@ -334,13 +334,15 @@ namespace IntelligentRobots.Grid
                         Vector2 n = Vector2.Normalize(entity.Position - v);
                         if (!(float.IsNaN(n.X) && float.IsNaN(n.Y)))
                         {
+                            /*
                             entity.Position = v + n * entity.Radius;
                             entity.Velocity = new Vector2(
                                 Math.Sign(entity.Velocity.X) * Math.Min(Math.Abs(entity.Velocity.X), 1 - Math.Abs(n.X)),
                                 Math.Sign(entity.Velocity.Y) * Math.Min(Math.Abs(entity.Velocity.Y), 1 - Math.Abs(n.Y))
                             );
+                             */
 
-                            runAgain = true;
+                            //runAgain = true;
                         }
                     }
                     else
