@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelligentRobots", "IntelligentRobots\IntelligentRobots\IntelligentRobots.csproj", "{17946F86-D79B-485C-B08D-AE796A8829CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelligentRobotsContent", "IntelligentRobots\IntelligentRobotsContent\IntelligentRobotsContent.contentproj", "{4A8F9EDC-D07D-48A2-A178-725A8281353E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasEngineXNA", "..\AtlasEngine\AtlasEngineXNA.csproj", "{46FCBAFD-ABB4-4163-B3AC-053BDB1B7231}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{17946F86-D79B-485C-B08D-AE796A8829CB}.Debug|x86.ActiveCfg = Debug|x86
+		{17946F86-D79B-485C-B08D-AE796A8829CB}.Debug|x86.Build.0 = Debug|x86
+		{17946F86-D79B-485C-B08D-AE796A8829CB}.Release|x86.ActiveCfg = Release|x86
+		{17946F86-D79B-485C-B08D-AE796A8829CB}.Release|x86.Build.0 = Release|x86
+		{4A8F9EDC-D07D-48A2-A178-725A8281353E}.Debug|x86.ActiveCfg = Debug|x86
+		{4A8F9EDC-D07D-48A2-A178-725A8281353E}.Release|x86.ActiveCfg = Release|x86
+		{46FCBAFD-ABB4-4163-B3AC-053BDB1B7231}.Debug|x86.ActiveCfg = Debug|x86
+		{46FCBAFD-ABB4-4163-B3AC-053BDB1B7231}.Debug|x86.Build.0 = Debug|x86
+		{46FCBAFD-ABB4-4163-B3AC-053BDB1B7231}.Release|x86.ActiveCfg = Release|x86
+		{46FCBAFD-ABB4-4163-B3AC-053BDB1B7231}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
