@@ -14,40 +14,77 @@ namespace IntelligentRobots.Entities
     public class Entity : AtlasEntity
     {
         private EntityDelegate _delegate;
-        private bool _locked;
 
         public EntityDelegate Delegate  {   get { return _delegate; }   }
-        public bool Locked              {   get { return _locked; } }
 
         public virtual Vector2 Position
         {
             get { return Vector2.Zero; }
-            set { }
         }
 
-        public virtual bool IsCrouching
-        {
-            get { return false; }
-            set {  }
-        }
+        public virtual bool Crouching{get { return false; }}
+        public virtual bool Alive { get { return false; } }
 
-        public virtual Vector2 Velocity
-        {
+        public virtual Vector2 Velocity{
             get { return Vector2.UnitX; }
-            set {  }
         }
 
-        public virtual Vector2 LookingDirection
-        {
+        public virtual Vector2 Direction{
             get { return Vector2.UnitX; }
-            set {  }
         }
-        public virtual float Radius { get { return 12; } }
+        public virtual float Radius { get { return 1; } }
+        public virtual float FOV    { get { return 1; } }
+
+
+
 
         public Entity(AtlasGlobal atlas, EntityDelegate entityDelegate)
             : base(atlas)
         {
             _delegate = entityDelegate;
+        }
+
+        public EntityStruct GetStruct()
+        {
+            return new EntityStruct(this);
+        }
+
+        public void Update(Grid.GridTrunk trunk)
+        {
+            _delegate.Update(this, trunk);
+
+            
+        }
+
+        protected virtual void Update()
+        {
+
+        }
+    }
+
+    public struct EntityStruct
+    {
+        public Vector2 position, velocity, direction;
+
+        public bool crouched, alive;
+
+        public float radius, fov;
+
+        public Type type;
+
+        public EntityStruct(Entity e)
+        {
+            type = e.GetType();
+
+            position    = e.Position;
+            velocity    = e.Velocity;
+            direction   = e.Direction;
+
+            crouched    = e.Crouching;
+            alive       = e.Alive;
+
+            fov         = e.FOV;
+            radius      = e.Radius;
         }
     }
 }
