@@ -23,7 +23,7 @@ namespace IntelligentRobots.Entities
         }
 
         public virtual bool Crouching{get { return false; }}
-        public virtual bool Alive { get { return false; } }
+        public virtual bool Alive   { get { return false; } }
 
         public virtual Vector2 Velocity{
             get { return Vector2.UnitX; }
@@ -32,10 +32,8 @@ namespace IntelligentRobots.Entities
         public virtual Vector2 Direction{
             get { return Vector2.UnitX; }
         }
-        public virtual float Radius { get { return 1; } }
-        public virtual float FOV    { get { return 1; } }
-
-
+        public virtual float Radius { get { return 6; } }
+        public virtual float FOV    { get { return (float)Math.PI; } }
 
 
         public Entity(AtlasGlobal atlas, EntityDelegate entityDelegate)
@@ -49,26 +47,21 @@ namespace IntelligentRobots.Entities
             return new EntityStruct(this);
         }
 
-        public void Logic(Grid.GridTrunk trunk)
-        {
-            //_delegate.Update(this, trunk);
-
-            Update();
-        }
-
-        protected virtual void Update()
-        {
-
-        }
+        public virtual void Update(){}
 
         public virtual void Draw()
         {
             Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("blop"),
                 Position, null,
-                Color.Blue, Vector2.One * 16,
+                Color.Lerp(Color.Blue, Color.Black, Crouching ? 0.5f : 0), Vector2.One * 16,
                 (float)Math.Atan2(Direction.Y, Direction.X), Radius / 16);
         }
+        public virtual void Collision(Vector2 v, Vector2 n) { }
 
+
+        public virtual bool TryMove(Vector2 v) { return false; }
+        public virtual bool TryCrouching(bool crouching) { return false; }
+        public virtual bool TryFaceDirection(Vector2 v) { return false; }
     }
 
     public struct EntityStruct

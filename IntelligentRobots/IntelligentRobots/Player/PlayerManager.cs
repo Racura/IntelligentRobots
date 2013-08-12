@@ -6,41 +6,50 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
+using IntelligentRobots.Entities;
+using IntelligentRobots.Human;
 using AtlasEngine;
 using AtlasEngine.BasicManagers;
 
 namespace IntelligentRobots.Player
 {
     public class PlayerManager
-        : AtlasManager
+        : EntityTeam
     {
-        PlayerEntity _entity;
+        HumanEntity _entity;
 
-        public Vector2 Position { get { return _entity.Position; } }
+        public Vector2 Position
+        {
+            get { return _entity.Position; }
+        }
 
         public PlayerManager(AtlasGlobal atlas)
             : base(atlas)
         {
-            _entity = new PlayerEntity(Atlas, 14);
+            _entity = new HumanEntity(Atlas, new PlayerEntityDelegate(atlas));
+
+            Add(_entity);
         }
 
         public override void Update(string arg)
         {
+            base.Update(arg);
+
             var cm = Atlas.GetManager<CameraManager>();
-            var gm = Atlas.GetManager<Grid.GridManager>();
-
-            _entity.Logic(gm.Trunk);
-
-            gm.MapCollide(_entity);
             cm.LookAt(10, _entity.Position, 450, 5, 1);
+
+            var gm = Atlas.GetManager<Grid.GridManager>();
+            gm.MapCollide(_entity);
         }
 
         public override void Draw(int pass)
         {
+            base.Draw(pass);
+
+
+
             var gm = Atlas.GetManager<Grid.GridManager>();
             var cm = Atlas.GetManager<CameraManager>();
-            _entity.Draw();
 
             Atlas.Graphics.Flush();
             Atlas.Graphics.SetPrimitiveType(PrimitiveType.LineStrip);

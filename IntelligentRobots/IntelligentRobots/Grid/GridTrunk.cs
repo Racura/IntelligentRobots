@@ -31,7 +31,7 @@ namespace IntelligentRobots.Grid
         public int Height { get { return _height; } }
         public int Size {   get { return _size; } }
 
-        private const byte MAX_HEIGHT = 3; 
+        private const byte MAX_HEIGHT = 2; 
 
         byte _value;
 
@@ -103,7 +103,7 @@ namespace IntelligentRobots.Grid
 
             var pm = Atlas.GetManager<Player.PlayerManager>();
 
-            var tmp = CanSee((int)(pm.Position.X / _size), (int)(pm.Position.Y / _size));
+            //var tmp = CanSee((int)(pm.Position.X / _size), (int)(pm.Position.Y / _size));
 
             var rec = new Rectangle(0, 0, _size, _size);
 
@@ -116,9 +116,9 @@ namespace IntelligentRobots.Grid
                 {
                     Atlas.Graphics.DrawSprite(t,
                         new Vector2(i * _size, j * _size), rec,
-                        Color.Lerp(Color.White, Color.Black,
-                        (tmp[i, j]) / (MAX_HEIGHT * 2f)));
-                    //(_heightMap[i, j]) / (MAX_HEIGHT * 1f)));
+                        Color.Lerp(Color.White, Color.DarkGray,
+                        //(tmp[i, j]) / (MAX_HEIGHT * 2f)));
+                        (_heightMap[i, j]) / (MAX_HEIGHT * 1f)));
                 }   
             }
         }
@@ -135,8 +135,8 @@ namespace IntelligentRobots.Grid
             
             int startX = (int)((v1.X - raduis * 0.99f) / _size);
             int startY = (int)((v1.Y - raduis * 0.99f) / _size);
-            int goalX = (int)((v2.X - raduis * 0.99f) / _size);
-            int goalY = (int)((v2.Y - raduis * 0.99f) / _size);
+            int goalX =  (int)((v2.X - raduis * 0.99f) / _size);
+            int goalY =  (int)((v2.Y - raduis * 0.99f) / _size);
 
             int tileSize = (int)((raduis * 2 - 1) / _size) + 1;
             int d = (int)((raduis * 2 * SQRT_2 - 1) / _size) + 1;
@@ -150,7 +150,9 @@ namespace IntelligentRobots.Grid
                 || goalX < 0 || goalY < 0
                 || goalX >= _width || goalY >= _height
                 || _heightMap[startX, startY] != 0 || _heightMap[goalX, goalY] != 0)
+            {
                 return false;
+            }
 
             List<GridNode> inList = new List<GridNode>();
             inList.Add(new GridNode(-1, startX, startY, 0, GridNode.EstimateDistanceTo(startX, startY, goalX, goalY)));
@@ -192,7 +194,7 @@ namespace IntelligentRobots.Grid
 
                                     if (!diagonal || CanFit(
                                         i + n.x - (i + 1) / 2, 
-                                        j + n.y - (j + 1) / 2, tileSize))
+                                        j + n.y - (j + 1) / 2, tileSize + 1))
                                     {
                                         var tmpNode = new GridNode(outList.Count, i + n.x, j + n.y,
                                                 n.steps + (diagonal ? SQRT_2 : 1),
@@ -334,15 +336,9 @@ namespace IntelligentRobots.Grid
                         Vector2 n = Vector2.Normalize(entity.Position - v);
                         if (!(float.IsNaN(n.X) && float.IsNaN(n.Y)))
                         {
-                            /*
-                            entity.Position = v + n * entity.Radius;
-                            entity.Velocity = new Vector2(
-                                Math.Sign(entity.Velocity.X) * Math.Min(Math.Abs(entity.Velocity.X), 1 - Math.Abs(n.X)),
-                                Math.Sign(entity.Velocity.Y) * Math.Min(Math.Abs(entity.Velocity.Y), 1 - Math.Abs(n.Y))
-                            );
-                             */
+                            entity.Collision(v, n);
 
-                            //runAgain = true;
+                            runAgain = true;
                         }
                     }
                     else
@@ -386,8 +382,6 @@ namespace IntelligentRobots.Grid
                     return MAX_HEIGHT;
                 else
                     value = Math.Max(_heightMap[x, y], value);
-
-                //value = Math.Max(value, _heightMap[x, y]);
 
                 if (x == x2 && y == y2)
                     break;

@@ -7,7 +7,8 @@ namespace IntelligentRobots.Entities
 {
     public interface EntityDelegate
     {
-        //public void Update(Entity entity, Grid.GridTrunk grid);
-        //public void Report(Entity entity, );
+        void Update(Entity entity, EntityUtil util);
+        void Report(Entity entity);
+        void Draw(Entity entity);
     }
 }
