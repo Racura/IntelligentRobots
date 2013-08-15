@@ -33,6 +33,8 @@ namespace IntelligentRobots.Grid
         public int HeightInTiles { get { return _height; } }
         public int Size {   get { return _tileSize; } }
 
+        public int Version { get; protected set; }
+
         private const byte MAX_HEIGHT = 2; 
 
         byte _value;
@@ -49,10 +51,13 @@ namespace IntelligentRobots.Grid
             _height = _heightMap.GetLength(1);
 
             _tileSize = 16;
+
+            Version = 0;
         }
 
         public void FromJson(GridJson json)
         {
+            Version++;
             _tileSize = json.size;
 
             _width = json.heightMap.GetLength(0);
@@ -89,9 +94,12 @@ namespace IntelligentRobots.Grid
                 if (t.State == TouchLocationState.Released)
                 {
                     _value = (byte)(((_heightMap[(int)(tmp.X / _tileSize), (int)(tmp.Y / _tileSize)] + 1) % (MAX_HEIGHT + 1)));
+
+                    Version++;
                 }
                 if (t.State == TouchLocationState.Moved)
                 {
+                    Version++;
                     _heightMap[(int)(tmp.X / _tileSize), (int)(tmp.Y / _tileSize)] = _value;
                     _sightMap = null;
                 }
