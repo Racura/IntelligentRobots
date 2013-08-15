@@ -24,7 +24,7 @@ namespace IntelligentRobots.Entities
         public EntityUtil(AtlasGlobal atlas, GridTrunk trunk)
             : base(atlas)
         {
-
+            _trunk = trunk;
         }
     }
 }
