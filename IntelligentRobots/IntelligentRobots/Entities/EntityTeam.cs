@@ -17,11 +17,13 @@ namespace IntelligentRobots.Entities
         private List<Entity> _team;
         private EntityUtil _util;
 
+        public Color Color { get; protected set; }
 
 
         public EntityTeam(AtlasGlobal atlas)
             : base(atlas)
         {
+            Color = Color.White;
             _team = new List<Entity>();
         }
 
@@ -58,7 +60,7 @@ namespace IntelligentRobots.Entities
         {
             foreach (var e in _team)
             {
-                e.Draw();
+                e.Draw(Color);
             }
             foreach (var e in _team)
             {

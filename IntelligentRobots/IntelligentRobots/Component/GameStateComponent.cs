@@ -41,6 +41,7 @@ namespace IntelligentRobots.Component
             _entites = new EntityManager(Atlas);
 
             _entites.AddTeam(new TeamAlek.AlekManager(Atlas));
+            _entites.AddTeam(new TeamKris.KrisManager(Atlas));
 
             AddManager(new AtlasManagerSorter(_camera,  "camera",    1, 9999));
             AddManager(new AtlasManagerSorter(_grid,    "camera",      120, 120));

@@ -49,11 +49,11 @@ namespace IntelligentRobots.Entities
 
         public virtual void Update(){}
 
-        public virtual void Draw()
+        public virtual void Draw(Color color)
         {
             Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("image/simple"),
                 Position, null,
-                Color.Lerp(Color.Blue, Color.Black, Crouching ? 0.5f : 0), Vector2.One * 16,
+                Color.Lerp(color, Color.Black, Crouching ? 0.25f : 0), Vector2.One * 16,
                 (float)Math.Atan2(Direction.Y, Direction.X) - MathHelper.PiOver2, Radius / 16);
         }
         public virtual void Collision(Vector2 v, Vector2 n) { }

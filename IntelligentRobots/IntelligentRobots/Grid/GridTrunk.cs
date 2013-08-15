@@ -27,8 +27,10 @@ namespace IntelligentRobots.Grid
 
         public List<Point>[] _nodeList;
 
-        public int Width {  get { return _width; } }
-        public int Height { get { return _height; } }
+        public int Width { get { return _width * _tileSize; } }
+        public int Height { get { return _height * _tileSize; } }
+        public int WidthInTiles { get { return _width; } }
+        public int HeightInTiles { get { return _height; } }
         public int Size {   get { return _tileSize; } }
 
         private const byte MAX_HEIGHT = 2; 
