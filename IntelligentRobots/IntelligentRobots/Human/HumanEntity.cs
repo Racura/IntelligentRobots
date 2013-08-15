@@ -19,7 +19,6 @@ namespace IntelligentRobots.Human
         public const float STANDING_SPEED = 192;
         public const float CROUCHING_SPEED = 64;
 
-
         private bool _crouching;
         private float _radius;
         private Vector2 _position;
@@ -37,11 +36,10 @@ namespace IntelligentRobots.Human
 
         public override Vector2 Direction { get { return _direction; } }
 
-
         public HumanEntity(AtlasGlobal atlas, EntityDelegate entityDelegate)
             : base(atlas, entityDelegate)
         {
-            _radius = 12;
+            _radius = 14;
             _direction = Vector2.UnitY;
 
             _wantedVelocity = Vector2.Zero;
@@ -62,7 +60,9 @@ namespace IntelligentRobots.Human
             _velocity += (_wantedVelocity - _velocity) * (8 * Atlas.Elapsed);
 
             if (Math.Abs(_velocity.X) < 0.001f && Math.Abs(_velocity.Y) < 0.001f)
+            {
                 _velocity = Vector2.Zero;
+            }
 
             _position += _velocity * (STANDING_SPEED * Atlas.Elapsed);
 
@@ -77,11 +77,13 @@ namespace IntelligentRobots.Human
             _wantedVelocity = v;
             return true; 
         }
+
         public override bool TryCrouching(bool crouching)
         {
             _wantedCrouching = crouching;
             return true;
         }
+
         public override bool TryFaceDirection(Vector2 v) { return false; }
 
         public override void Collision(Vector2 v, Vector2 n)

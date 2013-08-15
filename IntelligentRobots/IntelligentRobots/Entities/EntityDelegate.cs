@@ -9,6 +9,6 @@ namespace IntelligentRobots.Entities
     {
         void Update(Entity entity, EntityUtil util);
         void Report(Entity entity);
-        void Draw(Entity entity);
+        void DebugDraw(Entity entity);
     }
 }

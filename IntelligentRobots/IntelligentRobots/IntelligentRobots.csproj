@@ -83,6 +83,7 @@
     <Compile Include="Grid\GridCollision.cs" />
     <Compile Include="Grid\GridJson.cs" />
     <Compile Include="Grid\GridManager.cs" />
+    <Compile Include="Grid\GridObject.cs" />
     <Compile Include="Grid\GridRay.cs" />
     <Compile Include="Grid\GridTrunk.cs" />
     <Compile Include="Human\HumanEntity.cs" />

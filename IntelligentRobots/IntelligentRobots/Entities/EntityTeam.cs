@@ -57,7 +57,7 @@ namespace IntelligentRobots.Entities
             }
             foreach (var e in _team)
             {
-                if (e.Delegate != null) e.Delegate.Draw(e);
+                if (e.Delegate != null) e.Delegate.DebugDraw(e);
             }
         }
     }

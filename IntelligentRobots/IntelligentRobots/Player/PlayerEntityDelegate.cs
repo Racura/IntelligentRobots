@@ -40,7 +40,7 @@ namespace IntelligentRobots.Player
         {
         }
 
-        public void Draw(Entity entity)
+        public void DebugDraw(Entity entity)
         {
         }
     }
