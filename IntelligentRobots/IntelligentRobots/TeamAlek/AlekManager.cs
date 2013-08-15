@@ -13,7 +13,7 @@ using AtlasEngine.BasicManagers;
 
 namespace IntelligentRobots.TeamAlek
 {
-    public class TeamAlekManager
+    public class AlekManager
         : EntityTeam
     {
         HumanEntity _entity;
@@ -23,7 +23,7 @@ namespace IntelligentRobots.TeamAlek
             get { return _entity.Position; }
         }
 
-        public TeamAlekManager(AtlasGlobal atlas)
+        public AlekManager(AtlasGlobal atlas)
             : base(atlas)
         {
             _entity = new HumanEntity(Atlas, new AlekEntityDelegate(atlas));
@@ -31,9 +31,9 @@ namespace IntelligentRobots.TeamAlek
 
             Add(_entity);
 
-            var e = new HumanEntity(Atlas, new AlekEntityDelegate(atlas));
-            Add(e);
-            e.TryMove(Vector2.One * 100000);
+            
+            
+            
         }
     }
 }
