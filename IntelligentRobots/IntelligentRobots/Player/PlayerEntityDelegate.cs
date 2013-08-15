@@ -33,6 +33,7 @@ namespace IntelligentRobots.Player
                 + (keys.IsKeyDown(Keys.Left) ? -1 : 0) * cm.Right;
 
             entity.TryMove(v);
+            entity.TryFace(v);
             entity.TryCrouching(keys.IsKeyDown(Keys.LeftControl));
         }
 

@@ -28,6 +28,8 @@ namespace IntelligentRobots.Player
         {
             _entity = new HumanEntity(Atlas, new PlayerEntityDelegate(atlas));
 
+            Color = Color.Gray;
+
             Add(_entity);
         }
     }

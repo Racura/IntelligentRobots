@@ -26,6 +26,7 @@ namespace IntelligentRobots.Human
         private Vector2 _direction;
 
         private Vector2 _wantedVelocity;
+        private Vector2 _wantedDirection;
         private float _crouchHeight;
         private bool _wantedCrouching;
 
@@ -57,20 +58,29 @@ namespace IntelligentRobots.Human
                 _wantedVelocity = _wantedVelocity * speed;
             }
 
+
+            if (_wantedDirection.X != 0 || _wantedDirection.Y != 0)
+            {
+                _direction = Vector2.Normalize(_direction - (_direction - _wantedDirection) * Math.Max(Atlas.Elapsed * 16, 1));
+            }
+
+                        
+
             _velocity += (_wantedVelocity - _velocity) * (8 * Atlas.Elapsed);
 
             if (Math.Abs(_velocity.X) < 0.001f && Math.Abs(_velocity.Y) < 0.001f)
             {
                 _velocity = Vector2.Zero;
             }
-
-            _position += _velocity * (STANDING_SPEED * Atlas.Elapsed);
-
-            if (_velocity.X != 0 || _velocity.Y != 0)
+            else
             {
-                _direction = Vector2.Normalize(_direction - (_direction - Vector2.Normalize(_velocity)) * Math.Max(Atlas.Elapsed * 16, 1));
+                float spec = (Vector2.Dot(Vector2.Normalize(_velocity), _direction) * 0.5f + 0.5f) * 0.25f;
 
+
+                _position += _velocity * (STANDING_SPEED * Atlas.Elapsed * (0.75f + spec));
             }
+
+
 
             _crouching = _crouchHeight <= 0.1f;
         }
@@ -87,7 +97,12 @@ namespace IntelligentRobots.Human
             return true;
         }
 
-        public override bool TryFaceDirection(Vector2 v) { return false; }
+        public override bool TryFace(Vector2 v)
+        {
+            if(v.X != 0 || v.Y != 0)
+                _wantedDirection = Vector2.Normalize(v);
+            return true;
+        }
 
         public override void Collision(Vector2 v, Vector2 n)
         {

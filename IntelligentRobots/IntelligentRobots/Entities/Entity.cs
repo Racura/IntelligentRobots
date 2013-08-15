@@ -61,7 +61,7 @@ namespace IntelligentRobots.Entities
 
         public virtual bool TryMove(Vector2 v) { return false; }
         public virtual bool TryCrouching(bool crouching) { return false; }
-        public virtual bool TryFaceDirection(Vector2 v) { return false; }
+        public virtual bool TryFace(Vector2 v) { return false; }
     }
 
     public struct EntityStruct
