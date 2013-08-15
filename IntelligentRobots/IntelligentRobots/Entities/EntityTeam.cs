@@ -12,7 +12,7 @@ using AtlasEngine;
 
 namespace IntelligentRobots.Entities
 {
-    public class EntityTeam : AtlasManager
+    public class EntityTeam : AtlasEntity
     {
         private List<Entity> _team;
         private EntityUtil _util;
@@ -30,12 +30,18 @@ namespace IntelligentRobots.Entities
             _team.Add(entity);
         }
 
-        public override void Update(string arg)
+        public IEnumerable<Entity> Entities {
+            get
+            {
+                return _team;
+            }
+        }
+
+        public void Update()
         {
             var gm = Atlas.GetManager<Grid.GridManager>();
             var util = new EntityUtil(Atlas, gm.Trunk);
 
-            base.Update(arg);
             foreach (var e in _team)
             {
                 if (e.Delegate != null) e.Delegate.Update(e, util);
@@ -44,13 +50,12 @@ namespace IntelligentRobots.Entities
             foreach (var e in _team)
             {
                 e.Update();
+                gm.MapCollide(e);
             }
         }
 
-        public override void Draw(int pass)
+        public void Draw()
         {
-            base.Draw(pass);
-
             foreach (var e in _team)
             {
                 e.Draw();

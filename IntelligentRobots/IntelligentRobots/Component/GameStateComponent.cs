@@ -13,13 +13,15 @@ using AtlasEngine.BasicManagers;
 using IntelligentRobots.Grid;
 using IntelligentRobots.Player;
 
+using IntelligentRobots.Entities;
+
 namespace IntelligentRobots.Component
 {
     public class GameStateComponent : AtlasComponent
     {
         private CameraManager _camera;
         private GridManager _grid;
-        private PlayerManager _player;
+        private EntityManager _entites;
 
         public GameStateComponent(IAtlasGamePage gamePage, GraphicsDeviceManager graphicsDeviceManager)
             : base(gamePage, graphicsDeviceManager)
@@ -32,14 +34,17 @@ namespace IntelligentRobots.Component
             base.Initialize();
 
             Atlas.Content.LoadContent("image/mouse");
+            Atlas.Content.LoadContent("image/simple");
             
             _camera = new CameraManager(Atlas, Vector2.Zero, 300, new RectangleF(-10000, -10000, 20000, 20000));
             _grid = new GridManager(Atlas);
-            _player = new PlayerManager(Atlas);
+            _entites = new EntityManager(Atlas);
 
-            AddManager(new AtlasManagerSorter(_camera, "camera",    1, 9999));
-            AddManager(new AtlasManagerSorter(_grid, "camera",      120, 120));
-            AddManager(new AtlasManagerSorter(_player, "camera",    100, 100));
+            _entites.AddTeam(new TeamAlek.TeamAlekManager(Atlas));
+
+            AddManager(new AtlasManagerSorter(_camera,  "camera",    1, 9999));
+            AddManager(new AtlasManagerSorter(_grid,    "camera",      120, 120));
+            AddManager(new AtlasManagerSorter(_entites, "camera", 100, 100));
         }
 
         public override void PreDraw()

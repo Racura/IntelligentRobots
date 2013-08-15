@@ -101,11 +101,6 @@ namespace IntelligentRobots.Grid
             var cm = Atlas.GetManager<CameraManager>();
             var t = Atlas.Content.GetContent<Texture2D>("blop");
 
-
-            var pm = Atlas.GetManager<Player.PlayerManager>();
-
-            var tmp = CanSee((int)(pm.Position.X / _tileSize), (int)(pm.Position.Y / _tileSize), 2);
-
             var rec = new Rectangle(0, 0, _tileSize, _tileSize);
 
             for (int i = Math.Max(0, (int)((cm.Position.X - cm.Width * 0.6f) / _tileSize));
@@ -118,8 +113,7 @@ namespace IntelligentRobots.Grid
                     Atlas.Graphics.DrawSprite(t,
                         new Vector2(i * _tileSize, j * _tileSize), rec,
                         Color.Lerp(Color.White, Color.Black,
-                        (tmp[i, j]) / ((MAX_HEIGHT + 1) * 1f)));
-                        //(_heightMap[i, j]) / (MAX_HEIGHT * 1f)));
+                        (_heightMap[i, j]) / (MAX_HEIGHT * 1f)));
                 }   
             }
         }

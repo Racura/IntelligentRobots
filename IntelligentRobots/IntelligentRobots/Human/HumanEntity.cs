@@ -67,7 +67,10 @@ namespace IntelligentRobots.Human
             _position += _velocity * (STANDING_SPEED * Atlas.Elapsed);
 
             if (_velocity.X != 0 || _velocity.Y != 0)
-                _direction = Vector2.Normalize(_velocity);
+            {
+                _direction = Vector2.Normalize(_direction - (_direction - Vector2.Normalize(_velocity)) * Math.Max(Atlas.Elapsed * 16, 1));
+
+            }
 
             _crouching = _crouchHeight <= 0.1f;
         }

@@ -51,10 +51,10 @@ namespace IntelligentRobots.Entities
 
         public virtual void Draw()
         {
-            Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("blop"),
+            Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("image/simple"),
                 Position, null,
                 Color.Lerp(Color.Blue, Color.Black, Crouching ? 0.5f : 0), Vector2.One * 16,
-                (float)Math.Atan2(Direction.Y, Direction.X), Radius / 16);
+                (float)Math.Atan2(Direction.Y, Direction.X) - MathHelper.PiOver2, Radius / 16);
         }
         public virtual void Collision(Vector2 v, Vector2 n) { }
 
