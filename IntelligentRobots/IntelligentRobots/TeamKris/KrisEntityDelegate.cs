@@ -23,6 +23,7 @@ namespace IntelligentRobots.TeamKris
 
         public void Update(Entity entity, EntityUtil util)
         {
+            entity.TryMove(Vector2.One);
         }
 
         public void Report(Entity entity)

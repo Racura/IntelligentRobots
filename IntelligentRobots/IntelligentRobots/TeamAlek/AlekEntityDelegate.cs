@@ -32,7 +32,7 @@ namespace IntelligentRobots.TeamAlek
             {
                 if (util.Trunk.TryFindPath(entity.Position, new Vector2(util.Trunk.Width * Atlas.Rand, util.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
                 {
-
+                    _version = util.Trunk.Version;
                 }
             }
             else if (_version != util.Trunk.Version)

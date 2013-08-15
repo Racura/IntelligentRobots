@@ -61,7 +61,7 @@ namespace IntelligentRobots.Human
 
             if (_wantedDirection.X != 0 || _wantedDirection.Y != 0)
             {
-                _direction = Vector2.Normalize(_direction - (_direction - _wantedDirection) * Math.Max(Atlas.Elapsed * 16, 1));
+                _direction = Vector2.Normalize(_direction - (_direction - _wantedDirection) * Math.Min(Atlas.Elapsed * 8, 1));
             }
 
                         
@@ -75,8 +75,6 @@ namespace IntelligentRobots.Human
             else
             {
                 float spec = (Vector2.Dot(Vector2.Normalize(_velocity), _direction) * 0.5f + 0.5f) * 0.25f;
-
-
                 _position += _velocity * (STANDING_SPEED * Atlas.Elapsed * (0.75f + spec));
             }
 
