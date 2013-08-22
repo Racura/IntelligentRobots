@@ -21,6 +21,7 @@ namespace IntelligentRobots.TeamAlek
         Vector2 _destination;
         float timer;
         Vector2 _direction;
+        
 
         public AlekEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
@@ -64,7 +65,7 @@ namespace IntelligentRobots.TeamAlek
             {
                 _direction = _vectorList[1] - entity.Position;
                 entity.TryMove(_direction);
-                entity.TryFace(getFloatAngle(_direction));
+                
                 if (hitPoint(entity.Position, _vectorList[0], entity.Radius))
                 {
                     _vectorList.RemoveAt(0);
@@ -83,10 +84,16 @@ namespace IntelligentRobots.TeamAlek
                 float angle = entity.Angle + 2;
                 entity.TryFace(angle);
             }
-            if (timer > 2.75f)
+            else
+            {
+                entity.TryFace(getFloatAngle(_direction));
+            }
+            if (timer > 3.0f)
             {
                 timer = 0;
+                
             }
+            
         }
 
         private bool pathToSamePoint(Entity entity, EntityUtil util)
@@ -154,6 +161,8 @@ namespace IntelligentRobots.TeamAlek
 
         public void Report(Entity entity, EntityReport report)
         {
+                entity.TryCrouching((report.ListEntity.Length > 0));
+            
         }
 
         public void DebugDraw(Entity entity)

@@ -27,7 +27,7 @@ namespace IntelligentRobots.TeamAlek
             : base(atlas)
         {
             _entity = new HumanEntity(Atlas, new AlekEntityDelegate(atlas));
-            Color = Color.Purple;
+            Color = Color.Cyan;
 
             Add(_entity);
 
