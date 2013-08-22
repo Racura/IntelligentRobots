@@ -163,6 +163,7 @@ namespace IntelligentRobots.TeamAlek
         {
                 entity.TryCrouching((report.ListEntity.Length > 0));
             
+            
         }
 
         public void DebugDraw(Entity entity)
