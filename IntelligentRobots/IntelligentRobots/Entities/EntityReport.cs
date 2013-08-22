@@ -15,7 +15,7 @@ namespace IntelligentRobots.Entities
 
         public EntityReport()
         {
-
+            ListEntity = new EntityStruct[0];
         }
     }
 }
