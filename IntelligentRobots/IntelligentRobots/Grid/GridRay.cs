@@ -9,6 +9,8 @@ namespace IntelligentRobots.Grid
 {
     public class GridRay
     {
+        public delegate bool PaintGrid(int x, int y, byte lastValue, out byte newValue);
+
         public Vector2 point;
         public Vector2 normal;
 
@@ -26,8 +28,11 @@ namespace IntelligentRobots.Grid
             this.distance = -1;
         }
 
-        public void Grid(float tileSize, GridObject<byte> grid, byte stopValue, GridObject<byte> paintGrid)
+        public void Grid(float tileSize, byte maxValue, GridObject<byte> paint, GridObject<byte> canvas)
         {
+            if (paint == null || canvas == null)
+                return;
+
             float dx = Math.Abs(normal.X);
             float dy = Math.Abs(normal.Y);
 
@@ -45,16 +50,16 @@ namespace IntelligentRobots.Grid
             float distance = 0;
             byte value = 0;
 
+
             while(true)
             {
-                value = grid.Get(x, y, stopValue);
+                value = Math.Max(value, paint.Get(x, y, maxValue));
+                canvas.Set(x, y, value);
 
-                if (value >= stopValue)
+                if (value >= maxValue)
                 {
                     return;
                 }
-
-                paintGrid.Set(x, y, value);
 
                 if (error > 0)
                 {

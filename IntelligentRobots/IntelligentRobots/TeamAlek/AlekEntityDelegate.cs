@@ -20,6 +20,7 @@ namespace IntelligentRobots.TeamAlek
         int _version;
         Vector2 _destination;
         float timer;
+        Vector2 _direction;
 
         public AlekEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
@@ -27,19 +28,19 @@ namespace IntelligentRobots.TeamAlek
             _version = -1;
         }
 
-        public void spinbotUpdate(Entity entity, EntityUtil util)
+       
+
+        public float getFloatAngle(Vector2 vector)
         {
-            
-            Vector2 direction = Vector2.TransformNormal(entity.Direction, Matrix.CreateRotationZ(1f));
-            entity.TryMove(direction);
-            entity.TryFace(direction);
+            if (vector != null && (vector.X != 0 || vector.Y != 0))
+                return (float)Math.Atan2(vector.Y, vector.X);
+            else return 0;
         }
 
         public void Update(Entity entity, EntityUtil util)
         {
            
-            //spinbotUpdate(entity, util);
-            //return;
+        
             if (_vectorList == null || _vectorList.Count < 2)
             {
                 if (util.Trunk.TryFindPath(entity.Position, new Vector2(util.Trunk.Width * Atlas.Rand, util.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
@@ -61,8 +62,9 @@ namespace IntelligentRobots.TeamAlek
 
             if (_vectorList != null && _vectorList.Count > 1)
             {
-                entity.TryMove(_vectorList[1] - entity.Position);
-                entity.TryFace(_vectorList[1] - entity.Position);
+                _direction = _vectorList[1] - entity.Position;
+                entity.TryMove(_direction);
+                entity.TryFace(getFloatAngle(_direction));
                 if (hitPoint(entity.Position, _vectorList[0], entity.Radius))
                 {
                     _vectorList.RemoveAt(0);
@@ -78,8 +80,8 @@ namespace IntelligentRobots.TeamAlek
             timer += Atlas.Elapsed;
             if (timer > 2f)
             {
-                Vector2 direction = Vector2.TransformNormal(entity.Direction, Matrix.CreateRotationZ(1));
-                entity.TryFace(direction);
+                float angle = entity.Angle + 2;
+                entity.TryFace(angle);
             }
             if (timer > 2.75f)
             {
@@ -150,12 +152,17 @@ namespace IntelligentRobots.TeamAlek
             return false;
         }
 
-        public void Report(Entity entity)
+        public void Report(Entity entity, EntityReport report)
         {
         }
 
         public void DebugDraw(Entity entity)
         {
+        }
+
+        public bool Swappable(Entity entity, EntityDelegate entityDelegate)
+        {
+            return true;
         }
     }
 }
