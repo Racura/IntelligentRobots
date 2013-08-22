@@ -55,12 +55,13 @@ namespace IntelligentRobots.Grid
             {
                 if (e1.Delegate == null)    continue;
 
-                EntityReport report = new EntityReport();
 
+                EntityReport report = new EntityReport();
                 List<EntityStruct> _list = new List<EntityStruct>();
 
                 foreach (var e2 in _registeredEntities)
                 {
+
                     if (e1 == e2)   continue;
 
                     var n = Vector2.Normalize(e1.Position - e2.Position);
@@ -74,11 +75,11 @@ namespace IntelligentRobots.Grid
                         if (Trunk.Raytrace(e1.Position, testPosition) > ((e1.Crouching || e2.Crouching) ? 1 : 0))
                         {
                             _list.Add(e2.GetStruct());
+                            break;
                         }
                     }
-
-                    report.ListEntity = _list.ToArray();
                 }
+                report.ListEntity = _list.ToArray();
 
                 e1.Delegate.Report(e1, report);
             }
