@@ -72,7 +72,7 @@ namespace IntelligentRobots.Grid
                             e2.Position.X - n.Y * e2.Radius * ((i - 2) / 2),
                             e2.Position.Y - n.X * e2.Radius * ((i - 2) / 2));
 
-                        if (Trunk.Raytrace(e1.Position, testPosition) > ((e1.Crouching || e2.Crouching) ? 1 : 0))
+                        if (Trunk.Raytrace(e1.Position, testPosition) < ((e1.Crouching || e2.Crouching) ? 2 : 1))
                         {
                             _list.Add(e2.GetStruct());
                             break;
