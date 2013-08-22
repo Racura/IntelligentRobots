@@ -13,11 +13,11 @@ namespace IntelligentRobots.Grid
 {
     public class GridTrunk : AtlasEntity
     {
-        public static readonly float SQRT_2 = (float)Math.Sqrt(2);
-        public static readonly float SQRT_HALF = 1 / SQRT_2;
+        public static readonly float TwoSqrt = (float)Math.Sqrt(2);
+        public static readonly float HalfSqrt = 1 / TwoSqrt;
 
-        private byte[,] _heightMap;
-        private short[,] _tileMap;
+        private GridObject<byte> _heightMap;
+        private GridObject<short> _tileMap;
 
         private byte[,][][,] _sightMap;
 
@@ -42,13 +42,13 @@ namespace IntelligentRobots.Grid
         public GridTrunk(AtlasGlobal atlas)
             : base(atlas)
         {
-            _heightMap = new byte[64, 64];
-            _tileMap = new short[64, 64];
+            _heightMap = new GridObject<byte>(64, 64, 0);
+            _tileMap = new GridObject<short>(64, 64, 0);
 
             _visitedMap = new bool[64, 64];
 
-            _width = _heightMap.GetLength(0);
-            _height = _heightMap.GetLength(1);
+            _width = _heightMap.Width;
+            _height = _heightMap.Height;
 
             _tileSize = 16;
 
@@ -68,8 +68,8 @@ namespace IntelligentRobots.Grid
 
             }
 
-            _heightMap = json.heightMap;
-            _tileMap = json.tileMap;
+            _heightMap  = new GridObject<byte>(json.heightMap);
+            _tileMap    = new GridObject<short>(json.tileMap);
 
             _visitedMap = new bool[_width, _height];
             _sightMap = null;
@@ -77,7 +77,7 @@ namespace IntelligentRobots.Grid
 
         public GridJson ToJson()
         {
-            return new GridJson(_tileSize, _heightMap, _tileMap);
+            return new GridJson(_tileSize, _heightMap.GetGrid(), _tileMap.GetGrid());
         }
 
         public void Update()
@@ -93,14 +93,14 @@ namespace IntelligentRobots.Grid
 
                 if (t.State == TouchLocationState.Released)
                 {
-                    _value = (byte)(((_heightMap[(int)(tmp.X / _tileSize), (int)(tmp.Y / _tileSize)] + 1) % (MAX_HEIGHT + 1)));
+                    _value = (byte)((_heightMap.Get((int)(tmp.X / _tileSize), (int)(tmp.Y / _tileSize), 0) + 1) % (MAX_HEIGHT + 1));
 
                     Version++;
                 }
                 if (t.State == TouchLocationState.Moved)
                 {
                     Version++;
-                    _heightMap[(int)(tmp.X / _tileSize), (int)(tmp.Y / _tileSize)] = _value;
+                    _heightMap.Set((int)(tmp.X / _tileSize), (int)(tmp.Y / _tileSize), _value);
                     _sightMap = null;
                 }
             }
@@ -108,23 +108,32 @@ namespace IntelligentRobots.Grid
 
         public void Draw()
         {
+            if (Atlas.GetManager<Component.StateController>().Perpective == Component.StateController.PerpectiveState.World)
+            {
+                DrawHeightGrid(_heightMap, Color.White, Color.Black);
+            }
+        }
+
+        public void DrawHeightGrid(GridObject<byte> grid, Color min, Color max)
+        {
             var cm = Atlas.GetManager<CameraManager>();
             var t = Atlas.Content.GetContent<Texture2D>("blop");
 
             var rec = new Rectangle(0, 0, _tileSize, _tileSize);
 
             for (int i = Math.Max(0, (int)((cm.Position.X - cm.Width * 0.6f) / _tileSize));
-                i < Math.Min(_width, (int)((cm.Position.X + cm.Width * 0.6f) / _tileSize)); 
-                i++) {
+                i < Math.Min(_width, (int)((cm.Position.X + cm.Width * 0.6f) / _tileSize));
+                i++)
+            {
                 for (int j = Math.Max(0, (int)((cm.Position.Y - cm.Height * 0.6f) / _tileSize));
                     j < Math.Min(_height, (int)((cm.Position.Y + cm.Height * 0.6f) / _tileSize));
                     j++)
                 {
                     Atlas.Graphics.DrawSprite(t,
                         new Vector2(i * _tileSize, j * _tileSize), rec,
-                        Color.Lerp(Color.White, Color.Black,
-                        (_heightMap[i, j]) / (MAX_HEIGHT * 1f)));
-                }   
+                        Color.Lerp(min, max,
+                        grid.Get(i, j, MAX_HEIGHT) / ((MAX_HEIGHT + 1) * 1f)));
+                }
             }
         }
 
@@ -144,7 +153,7 @@ namespace IntelligentRobots.Grid
             int goalY =  (int)((v2.Y - raduis * 0.99f) / _tileSize);
 
             int tileSize = (int)((raduis * 2 - 1) / _tileSize) + 1;
-            int d = (int)((raduis * 2 * SQRT_2 - 1) / _tileSize) + 1;
+            int d = (int)((raduis * 2 * TwoSqrt - 1) / _tileSize) + 1;
 
             bool success = false;
 
@@ -154,7 +163,7 @@ namespace IntelligentRobots.Grid
                 || startX >= _width || startY >= _height
                 || goalX < 0 || goalY < 0
                 || goalX >= _width || goalY >= _height
-                || _heightMap[startX, startY] != 0 || _heightMap[goalX, goalY] != 0)
+                || _heightMap.Get(startX, startY, 0) != 0 || _heightMap.Get(goalX, goalY, 0) != 0)
             {
                 return false;
             }
@@ -202,7 +211,7 @@ namespace IntelligentRobots.Grid
                                         j + n.y - (j + 1) / 2, tileSize + 1))
                                     {
                                         var tmpNode = new GridNode(outList.Count, i + n.x, j + n.y,
-                                                n.steps + (diagonal ? SQRT_2 : 1),
+                                                n.steps + (diagonal ? TwoSqrt : 1),
                                                 GridNode.EstimateDistanceTo(i + n.x, j + n.y, goalX, goalY));
 
                                         if (!_visitedMap[i + n.x, j + n.y])
@@ -249,8 +258,8 @@ namespace IntelligentRobots.Grid
             {
                 node = outList[node.parent];
                 path.Add(new Vector2((node.x) * _tileSize + raduis, (node.y) * _tileSize + raduis));
-                
             }
+
             path.Reverse();
 
             return true;
@@ -263,7 +272,7 @@ namespace IntelligentRobots.Grid
 
             for (int i = 0; i < tileSize; i++ )
                 for (int j = 0; j < tileSize; j++)
-                    if (_heightMap[x + i, y + j] != 0)
+                    if (_heightMap.Get(x + i, y + j, 0) != 0)
                         return false;
 
 
@@ -298,7 +307,7 @@ namespace IntelligentRobots.Grid
                             && collisionCounter < _tempCollisions.Length;
                         j++)
                     {
-                        if (_heightMap[i, j] != 0)
+                        if (_heightMap.Get(i, j, 1) != 0) //does it collide
                         {
                             _tempCollisions[collisionCounter].Set(i, j);
                             collisionCounter++;
@@ -383,7 +392,7 @@ namespace IntelligentRobots.Grid
 
             for (; n > 0; --n)
             {
-                value = Math.Max(_heightMap[x, y], value);
+                value = Math.Max(_heightMap.Get(x, y, MAX_HEIGHT), value);
 
                 if (x == x2 && y == y2)
                 {
@@ -406,6 +415,27 @@ namespace IntelligentRobots.Grid
             }
 
             return value;
+        }
+
+        public GridObject<byte> CanSee(Vector2 positon, float angle, float fov, bool crouching)
+        {
+            byte maxHeight = (byte)(crouching ? 1 : 2);
+
+            GridObject<byte> sightGrid = new GridObject<byte>(Width, Height, (byte)(3));
+            sightGrid.SetType = GridObjectSetType.Min;
+
+            GridRay ray = new GridRay();
+
+            for (float i = angle - fov * 0.5f; i < angle + fov * 0.5f; i += 0.02f)
+            {
+                Vector2 n = new Vector2((float)Math.Cos(i), (float)Math.Sin(i));
+
+                ray.Setup(positon, n);
+
+                ray.Grid(_tileSize, maxHeight, _heightMap, sightGrid);
+            }
+
+            return sightGrid;
         }
 
         public byte[,] CanSee(int x, int y, byte height)
@@ -468,7 +498,7 @@ namespace IntelligentRobots.Grid
                 int tmpX = Math.Abs(x - goalX);
                 int tmpY = Math.Abs(y - goalY);
 
-                return Math.Abs(tmpX - tmpY) + Math.Min(tmpX, tmpY) * SQRT_2;
+                return Math.Abs(tmpX - tmpY) + Math.Min(tmpX, tmpY) * TwoSqrt;
             }
 
             public float GetDistance()

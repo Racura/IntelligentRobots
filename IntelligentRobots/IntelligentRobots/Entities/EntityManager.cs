@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.Graphics;
 
 using AtlasEngine;
 
+using IntelligentRobots.Component;
+
 namespace IntelligentRobots.Entities
 {
     public class EntityManager : AtlasManager
@@ -28,6 +30,11 @@ namespace IntelligentRobots.Entities
         public override void Update(string arg)
         {
             base.Update(arg);
+
+            var state = Atlas.GetStateController<StateController>();
+
+            if (state.State == StateController.GameState.Paused)
+                return;
 
             foreach (var e in _list)
             {

@@ -15,7 +15,6 @@ namespace IntelligentRobots.Entities
     public class EntityTeam : AtlasEntity
     {
         private List<Entity> _team;
-        private EntityUtil _util;
 
         public Color Color { get; protected set; }
 
@@ -27,9 +26,16 @@ namespace IntelligentRobots.Entities
             _team = new List<Entity>();
         }
 
+        public virtual Entity AddAt(RectangleF spawn)
+        {
+            return null;
+        }
+
         public void Add(Entity entity)
         {
             _team.Add(entity);
+
+            Atlas.GetManager<Grid.GridManager>().Register(entity);
         }
 
         public IEnumerable<Entity> Entities {
@@ -52,7 +58,6 @@ namespace IntelligentRobots.Entities
             foreach (var e in _team)
             {
                 e.Update();
-                gm.MapCollide(e);
             }
         }
 
@@ -62,9 +67,16 @@ namespace IntelligentRobots.Entities
             {
                 e.Draw(Color);
             }
-            foreach (var e in _team)
+
+
+            var state = Atlas.GetStateController<Component.StateController>();
+
+            if (state.Debug)
             {
-                if (e.Delegate != null) e.Delegate.DebugDraw(e);
+                foreach (var e in _team)
+                {
+                    if (e.Delegate != null) e.Delegate.DebugDraw(e);
+                }
             }
         }
     }

@@ -28,9 +28,17 @@ namespace IntelligentRobots.TeamKris
         {
             Color = Color.Red;
 
-            _entity = new HumanEntity(Atlas, new KrisEntityDelegate(atlas));
+            _entity = AddAt(new RectangleF(100, 100, 100, 100)) as HumanEntity;
+        }
 
-            Add(_entity);
+        public override Entity AddAt(RectangleF spawn)
+        {
+            var h = HumanEntity.CreateAt(Atlas, spawn);
+
+            h.TrySetDelegate(new KrisEntityDelegate(Atlas));
+            Add(h);
+
+            return h;
         }
     }
 }

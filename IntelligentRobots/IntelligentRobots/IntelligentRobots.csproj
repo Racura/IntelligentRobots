@@ -76,6 +76,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Component\GameStateComponent.cs" />
+    <Compile Include="Component\StateController.cs" />
+    <Compile Include="Entities\EntityReport.cs" />
     <Compile Include="TeamKris\KrisEntityDelegate.cs" />
     <Compile Include="TeamKris\KrisManager.cs" />
     <Compile Include="Entities\Entity.cs" />

@@ -22,6 +22,7 @@ namespace IntelligentRobots.Component
         private CameraManager _camera;
         private GridManager _grid;
         private EntityManager _entites;
+        private StateController _stateController;
 
         public GameStateComponent(IAtlasGamePage gamePage, GraphicsDeviceManager graphicsDeviceManager)
             : base(gamePage, graphicsDeviceManager)
@@ -40,13 +41,20 @@ namespace IntelligentRobots.Component
             _grid = new GridManager(Atlas);
             _entites = new EntityManager(Atlas);
 
+            _stateController = new StateController(Atlas);
+            Atlas.SetStateController(_stateController);
+
+            AddManager(new AtlasManagerSorter(_stateController, "camera",   9999999, 1));
+            AddManager(new AtlasManagerSorter(_camera,          "camera",   1, 9999));
+            AddManager(new AtlasManagerSorter(_grid,            "camera",   120, 120));
+            AddManager(new AtlasManagerSorter(_entites,         "camera",   100, 100));
+
+
+
+
             _entites.AddTeam(new TeamAlek.AlekManager(Atlas));
             _entites.AddTeam(new TeamKris.KrisManager(Atlas));
             _entites.AddTeam(new Player.PlayerManager(Atlas));
-
-            AddManager(new AtlasManagerSorter(_camera,  "camera",    1, 9999));
-            AddManager(new AtlasManagerSorter(_grid,    "camera",      120, 120));
-            AddManager(new AtlasManagerSorter(_entites, "camera", 100, 100));
         }
 
         public override void PreDraw()

@@ -121,5 +121,10 @@ namespace IntelligentRobots.TeamAlek
         public void DebugDraw(Entity entity)
         {
         }
+
+        public bool Swappable(Entity entity, EntityDelegate entityDelegate)
+        {
+            return true;
+        }
     }
 }

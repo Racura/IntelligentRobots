@@ -23,7 +23,7 @@ namespace IntelligentRobots.TeamKris
 
         public void Update(Entity entity, EntityUtil util)
         {
-            entity.TryMove(Vector2.One);
+            entity.TryMove(new Vector2(Atlas.Rand * 2 - 1, Atlas.Rand * 2 - 1));
         }
 
         public void Report(Entity entity)
@@ -32,6 +32,12 @@ namespace IntelligentRobots.TeamKris
 
         public void DebugDraw(Entity entity)
         {
+        }
+
+
+        public bool Swappable(Entity entity, EntityDelegate entityDelegate)
+        {
+            return true;
         }
     }
 }

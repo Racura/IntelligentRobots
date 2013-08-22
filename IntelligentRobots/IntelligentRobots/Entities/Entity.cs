@@ -29,11 +29,11 @@ namespace IntelligentRobots.Entities
             get { return Vector2.UnitX; }
         }
 
-        public virtual Vector2 Direction{
-            get { return Vector2.UnitX; }
+        public virtual float Angle{
+            get { return 0; }
         }
         public virtual float Radius { get { return 6; } }
-        public virtual float FOV    { get { return (float)Math.PI; } }
+        public virtual float FOV    { get { return (float)Math.PI * 0.5f; } }
 
 
         public Entity(AtlasGlobal atlas, EntityDelegate entityDelegate)
@@ -54,23 +54,42 @@ namespace IntelligentRobots.Entities
             Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("image/simple"),
                 Position, null,
                 Color.Lerp(color, Color.Black, Crouching ? 0.25f : 0), Vector2.One * 16,
-                (float)Math.Atan2(Direction.Y, Direction.X) - MathHelper.PiOver2, Radius / 16);
+                Angle - MathHelper.PiOver2, Radius / 16);
+
+
+
+            //var gm = Atlas.GetManager<Grid.GridManager>();
+            //gm.Trunk.DrawHeightGrid(gm.Trunk.CanSee(Position, Angle, FOV, Crouching), Color.White, Color.Transparent);
         }
         public virtual void Collision(Vector2 v, Vector2 n) { }
 
 
         public virtual bool TryMove(Vector2 v) { return false; }
         public virtual bool TryCrouching(bool crouching) { return false; }
-        public virtual bool TryFace(Vector2 v) { return false; }
+        public virtual bool TryFace(float v) { return false; }
+        public virtual bool TrySetDelegate(EntityDelegate entityDelegate)
+        {
+            if (_delegate == null)
+            {
+                _delegate = entityDelegate;
+                return true;
+            }
+            else if (_delegate.Swappable(this, entityDelegate))
+            {
+                _delegate = entityDelegate;
+                return true;
+            }
+            return false; 
+        }
     }
 
     public struct EntityStruct
     {
-        public Vector2 position, velocity, direction;
+        public Vector2 position, velocity;
 
         public bool crouched, alive;
 
-        public float radius, fov;
+        public float radius, fov, angle;
 
         public Type type;
 
@@ -80,10 +99,10 @@ namespace IntelligentRobots.Entities
 
             position    = e.Position;
             velocity    = e.Velocity;
-            direction   = e.Direction;
 
             crouched    = e.Crouching;
             alive       = e.Alive;
+            angle       = e.Angle;
 
             fov         = e.FOV;
             radius      = e.Radius;

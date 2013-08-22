@@ -23,10 +23,13 @@ namespace IntelligentRobots.Human
         private float _radius;
         private Vector2 _position;
         private Vector2 _velocity;
-        private Vector2 _direction;
+        private float _angle;
+
+
+        private float _fov;
 
         private Vector2 _wantedVelocity;
-        private Vector2 _wantedDirection;
+        private float _wantedAngle;
         private float _crouchHeight;
         private bool _wantedCrouching;
 
@@ -35,13 +38,15 @@ namespace IntelligentRobots.Human
         public override Vector2 Position { get { return _position; } }
         public override Vector2 Velocity { get { return _velocity; } }
 
-        public override Vector2 Direction { get { return _direction; } }
+        public override float Angle { get { return _angle; } }
+
+        public override float FOV { get { return _fov; } }
 
         public HumanEntity(AtlasGlobal atlas, EntityDelegate entityDelegate)
             : base(atlas, entityDelegate)
         {
             _radius = 14;
-            _direction = Vector2.UnitY;
+            _angle = 0;
 
             _wantedVelocity = Vector2.Zero;
         }
@@ -59,11 +64,14 @@ namespace IntelligentRobots.Human
             }
 
 
-            if (_wantedDirection.X != 0 || _wantedDirection.Y != 0)
-            {
-                _direction = Vector2.Normalize(_direction - (_direction - _wantedDirection) * Math.Min(Atlas.Elapsed * 8, 1));
-            }
+            while (Math.Abs(_wantedAngle - _angle) > Math.PI)
+                _wantedAngle -= (float)(Math.Sign(_wantedAngle - _angle) * 2 * Math.PI);
 
+
+            _angle += Math.Min(Math.Abs(_wantedAngle - _angle), Atlas.Elapsed * 4) * Math.Sign(_wantedAngle - _angle);
+
+            while (Math.Abs(_angle) > Math.PI + 0.000001f)
+                _angle = _angle - (float)(Math.Sign(_angle) * 2 * Math.PI);
                         
 
             _velocity += (_wantedVelocity - _velocity) * (8 * Atlas.Elapsed);
@@ -74,15 +82,26 @@ namespace IntelligentRobots.Human
             }
             else
             {
-                float spec = (Vector2.Dot(Vector2.Normalize(_velocity), _direction) * 0.5f + 0.5f) * 0.25f;
-                _position += _velocity * (STANDING_SPEED * Atlas.Elapsed * (0.75f + spec));
+                float spec = (float)(1 - RadianDifference((float)Math.Atan2(_velocity.Y, _velocity.X), _angle) / Math.PI) * 0.5f;
+                _position += _velocity * (STANDING_SPEED * Atlas.Elapsed * (0.5f + spec));
             }
+
+            float tmpFov = 1.5f + _crouchHeight * 1.5f - _velocity.LengthSquared() * 1.5f;
+
+            _fov = tmpFov < _fov ? tmpFov : (_fov - (_fov - tmpFov) * Atlas.Elapsed);
 
 
 
             _crouching = _crouchHeight <= 0.1f;
         }
 
+        private float RadianDifference(float r1, float r2)
+        {
+            while (Math.Abs(r1 - r2) > Math.PI + 0.0001f)
+                r1 -= (float)(Math.Sign(r1 - r2) * 2 * Math.PI);
+
+            return Math.Abs(r1 - r2);
+        }
 
         public override bool TryMove(Vector2 v) {
             _wantedVelocity = v;
@@ -95,10 +114,10 @@ namespace IntelligentRobots.Human
             return true;
         }
 
-        public override bool TryFace(Vector2 v)
+        public override bool TryFace(float angle)
         {
-            if(v.X != 0 || v.Y != 0)
-                _wantedDirection = Vector2.Normalize(v);
+            _wantedAngle = angle;
+
             return true;
         }
 
@@ -110,6 +129,15 @@ namespace IntelligentRobots.Human
                 Math.Sign(Velocity.X) * Math.Min(Math.Abs(_velocity.X), 1 - Math.Abs(n.X)),
                 Math.Sign(_velocity.Y) * Math.Min(Math.Abs(_velocity.Y), 1 - Math.Abs(n.Y))
             );
+        }
+
+        public static HumanEntity CreateAt(AtlasGlobal atlas, RectangleF rect)
+        {
+            var h = new HumanEntity(atlas, null);
+
+            h._position = new Vector2(rect.X + rect.Width * atlas.Rand, rect.Y + rect.Height * atlas.Rand);
+
+            return h;
         }
     }
 }
