@@ -55,7 +55,10 @@ namespace IntelligentRobots.Entities
         {
             if (Locked) return;
 
-            var entity = _delegate.WillAdded(this, rectangleF);
+            var entity = _delegate.WillAdded(this, rectangleF, Atlas.GetManager<Grid.GridManager>().Trunk);
+
+            if (entity == null)
+                return;
 
             foreach (var r in rectangleF)
             {
