@@ -7,6 +7,7 @@ using AtlasEngine;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 using IntelligentRobots.Entities;
 
@@ -16,15 +17,11 @@ namespace IntelligentRobots.Grid
         : AtlasManager
     {
         private GridTrunk _trunk;
-        private List<Entity> _registeredEntities;
-
-
         public GridTrunk Trunk { get { return _trunk; } }
 
         public GridManager(AtlasGlobal atlas)
             : base(atlas)
         {
-            _registeredEntities = new List<Entity>();
             _trunk = new GridTrunk(atlas);
 
             try {
@@ -36,6 +33,7 @@ namespace IntelligentRobots.Grid
         public override void Update(string arg)
         {
             base.Update(arg);
+            _trunk.Update();
 
             if (Atlas.Input.IsKeyJustReleased(Keys.Enter))
             {
@@ -45,46 +43,68 @@ namespace IntelligentRobots.Grid
                 } catch { }
             }
 
+            var teams = Atlas.GetManager<EntityManager>().Teams;
 
-            foreach (var e in _registeredEntities)
+            List<Entity> entityList = new List<Entity>();
+
+            foreach (var t in teams)
             {
-                MapCollide(e);
+                foreach (var e in t.TeamMembers)
+                {
+                    MapCollide(e);
+
+                    entityList.Add(e);
+                }
             }
 
-            foreach (var e1 in _registeredEntities)
+
+            foreach (var t in teams)
             {
-                if (e1.Delegate == null)    continue;
+                EntityReport report = new EntityReport(_trunk);
 
+                if (t.Delegate == null) continue;
 
-                EntityReport report = new EntityReport();
-                List<EntityStruct> _list = new List<EntityStruct>();
-
-                foreach (var e2 in _registeredEntities)
+                foreach (var e1 in t.TeamMembers)
                 {
+                    List<EntityStruct> _list = new List<EntityStruct>();
 
-                    if (e1 == e2)   continue;
+                    Vector2 facingPos = new Vector2((float)Math.Cos(e1.Angle + e1.FOV * 0.5), (float)Math.Sin(e1.Angle + e1.FOV * 0.5));
+                    Vector2 facingNeg = new Vector2((float)Math.Cos(e1.Angle - e1.FOV * 0.5), (float)Math.Sin(e1.Angle - e1.FOV * 0.5));
 
-                    var n = Vector2.Normalize(e1.Position - e2.Position);
-
-                    for (int i = 0; i < 5; i++)
+                    foreach (var e2 in entityList)
                     {
-                        Vector2 testPosition = new Vector2(
-                            e2.Position.X - n.Y * e2.Radius * ((i - 2) / 2),
-                            e2.Position.Y - n.X * e2.Radius * ((i - 2) / 2));
+                        if (e1 == e2) continue;
 
-                        if (Trunk.Raytrace(e1.Position, testPosition) < ((e1.Crouching || e2.Crouching) ? 2 : 1))
+                        var n = Vector2.Normalize(e2.Position - e1.Position);
+
+
+                        for (int i = 0; i < 5; i++)
                         {
-                            _list.Add(e2.GetStruct());
-                            break;
+                            Vector2 testNormal = new Vector2(
+                                e2.Position.X + n.Y * e2.Radius * ((i - 2f) / 2),
+                                e2.Position.Y - n.X * e2.Radius * ((i - 2f) / 2));
+
+
+                            if (facingPos.X * (testNormal.Y - e1.Position.Y) - facingPos.Y * (testNormal.X - e1.Position.X) > 0
+                                || facingNeg.X * (testNormal.Y - e1.Position.Y) - facingNeg.Y * (testNormal.X - e1.Position.X) < 0)
+                                continue;
+
+                            if (Trunk.Raytrace(e1.Position, testNormal, (e1.Crouching || e2.Crouching) ? 1 : 2))
+                            {
+                                _list.Add(e2.GetStruct());
+                                break;
+                            }
                         }
                     }
+                    report.SightList.Add(e1, _list.ToArray());
                 }
-                report.ListEntity = _list.ToArray();
 
-                e1.Delegate.Report(e1, report);
+                t.Delegate.Update(t, report);
             }
 
-            _trunk.Update();
+            Atlas.GetManager<AtlasEngine.BasicManagers.CameraManager>().LookAt(1,
+                new Vector2(Trunk.Width * 0.5f, Trunk.Height * 0.5f),
+                Math.Max(Trunk.Width, Trunk.Height) * 0.55f, 1, 1);
         }
 
         public override void Draw(int pass)
@@ -100,14 +120,6 @@ namespace IntelligentRobots.Grid
         public bool FindPath(Vector2 start, Vector2 goal, float raduis, out List<Vector2> output)
         {
             return _trunk.TryFindPath(start, goal, raduis, out output);
-        }
-
-        public void Register(Entity entity)
-        {
-            if (!_registeredEntities.Contains(entity))
-            {
-                _registeredEntities.Add(entity);
-            }
         }
     }
 }

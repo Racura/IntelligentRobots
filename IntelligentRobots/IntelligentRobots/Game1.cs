@@ -25,6 +25,7 @@ namespace IntelligentRobots
         public Game1()
             : base()
         {
+            
         }
 
         protected override void Initialize()
@@ -41,7 +42,7 @@ namespace IntelligentRobots
         {
             get
             {
-                return true;
+                return this.IsActive;
             }
             set
             {

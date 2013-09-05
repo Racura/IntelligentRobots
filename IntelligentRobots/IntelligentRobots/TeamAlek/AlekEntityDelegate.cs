@@ -14,6 +14,7 @@ using AtlasEngine.BasicManagers;
 
 namespace IntelligentRobots.TeamAlek
 {
+    /*
     public class AlekEntityDelegate : AtlasEntity, EntityDelegate
     {
         List<Vector2> _vectorList;
@@ -38,23 +39,24 @@ namespace IntelligentRobots.TeamAlek
             else return 0;
         }
 
-        public void Update(Entity entity, EntityUtil util)
+
+        public void Update(Entity entity, EntityReport report)
         {
+            entity.TryCrouching((report.ListEntity.Length > 0));
            
         
             if (_vectorList == null || _vectorList.Count < 2)
             {
-                if (util.Trunk.TryFindPath(entity.Position, new Vector2(util.Trunk.Width * Atlas.Rand, util.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
+                if (report.Trunk.TryFindPath(entity.Position, new Vector2(report.Trunk.Width * Atlas.Rand, report.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
                 {
-                    _version = util.Trunk.Version;
+                    _version = report.Trunk.Version;
                 }
             }
-            else 
-            if (_version != util.Trunk.Version)
+            else if (_version != report.Trunk.Version)
             {
-                if (!pathToSamePoint(entity, util))
+                if (!pathToSamePoint(entity, report))
                 {
-                    pathToRandomPoint(entity, util);
+                    pathToRandomPoint(entity, report);
                 }
             }
             
@@ -66,9 +68,9 @@ namespace IntelligentRobots.TeamAlek
                 _direction = _vectorList[1] - entity.Position;
                 entity.TryMove(_direction);
                 
-                if (hitPoint(entity.Position, _vectorList[0], entity.Radius))
+                if (hitPoint(entity.Position, _vectorList[1], entity.Radius)) // fixed the idle problem
                 {
-                    _vectorList.RemoveAt(0);
+                    _vectorList.RemoveAt(1);
                 }
             }
             else
@@ -96,38 +98,38 @@ namespace IntelligentRobots.TeamAlek
             
         }
 
-        private bool pathToSamePoint(Entity entity, EntityUtil util)
+        private bool pathToSamePoint(Entity entity, EntityReport report)
         {
-            
-            if (util.Trunk.TryFindPath(entity.Position, _vectorList[_vectorList.Count-1], entity.Radius, out _vectorList))
+
+            if (report.Trunk.TryFindPath(entity.Position, _vectorList[_vectorList.Count - 1], entity.Radius, out _vectorList))
             {
-                _version = util.Trunk.Version;
+                _version = report.Trunk.Version;
                 return true;
             }
             return false;
         }
 
-        private void pathToRandomPoint(Entity entity, EntityUtil util)
+        private void pathToRandomPoint(Entity entity, EntityReport report)
         {
             if (_vectorList == null || _vectorList.Count < 2)
             {
-                if (util.Trunk.TryFindPath(entity.Position, new Vector2(util.Trunk.Width * Atlas.Rand, util.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
+                if (report.Trunk.TryFindPath(entity.Position, new Vector2(report.Trunk.Width * Atlas.Rand, report.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
                 {
-                    _version = util.Trunk.Version;
+                    _version = report.Trunk.Version;
                 }
             }
         }
 
-        public void Update2(Entity entity, EntityUtil util)
+        public void Update2(Entity entity, EntityReport report)
         {
             if (_vectorList == null || _vectorList.Count == 0)
             {
-                if (util.Trunk.TryFindPath(entity.Position, new Vector2(util.Trunk.Width * Atlas.Rand, util.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
+                if (report.Trunk.TryFindPath(entity.Position, new Vector2(report.Trunk.Width * Atlas.Rand, report.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
                 {
-                    _version = util.Trunk.Version;
+                    _version = report.Trunk.Version;
                 }
             }
-            else if (_version != util.Trunk.Version)
+            else if (_version != report.Trunk.Version)
             {
                 _vectorList = null;
             }
@@ -158,14 +160,6 @@ namespace IntelligentRobots.TeamAlek
 
             return false;
         }
-
-        public void Report(Entity entity, EntityReport report)
-        {
-                entity.TryCrouching((report.ListEntity.Length > 0));
-            
-            
-        }
-
         public void DebugDraw(Entity entity)
         {
         }
@@ -175,4 +169,5 @@ namespace IntelligentRobots.TeamAlek
             return true;
         }
     }
+     */
 }

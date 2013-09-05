@@ -14,30 +14,39 @@ using AtlasEngine.BasicManagers;
 
 namespace IntelligentRobots.TeamKris
 {
-    public class KrisEntityDelegate : AtlasEntity, EntityDelegate
+    /*public class KrisEntityDelegate : AtlasEntity, EntityDelegate
     {
         public KrisEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
         {
         }
 
-        public void Update(Entity entity, EntityUtil util)
+
+        public void Update(EntityTeam team, EntityReport report)
         {
-            entity.TryMove(new Vector2(Atlas.Rand * 2 - 1, Atlas.Rand * 2 - 1));
+            //entity.TryMove(new Vector2(Atlas.Rand * 2 - 1, Atlas.Rand * 2 - 1) * 0.0f);
         }
 
-        public void Report(Entity entity, EntityReport report)
-        {
-        }
-
-        public void DebugDraw(Entity entity)
+        public void SpawnAt(EntityTeam team, RectangleF[] possibleLocations)
         {
         }
 
+        public void DebugDraw(EntityTeam team)
+        {
+        }
 
-        public bool Swappable(Entity entity, EntityDelegate entityDelegate)
+        public bool Swappable(EntityTeam team, EntityDelegate entityDelegate)
         {
             return true;
         }
-    }
+
+        public Entity WillAdded(EntityTeam team, Rectangle[] possibleLocations)
+        {
+            return null;
+        }
+
+        public void HasAdded(EntityTeam team, Entity enitity)
+        {
+        }
+    }*/
 }

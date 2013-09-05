@@ -13,9 +13,9 @@ namespace IntelligentRobots.Entities
 {
     public class Entity : AtlasEntity
     {
-        private EntityDelegate _delegate;
+        private EntityTeam _team;
 
-        public EntityDelegate Delegate  {   get { return _delegate; }   }
+        public string Id { get; private set; }
 
         public virtual Vector2 Position
         {
@@ -36,10 +36,11 @@ namespace IntelligentRobots.Entities
         public virtual float FOV    { get { return (float)Math.PI * 0.5f; } }
 
 
-        public Entity(AtlasGlobal atlas, EntityDelegate entityDelegate)
+        public Entity(AtlasGlobal atlas, EntityTeam team)
             : base(atlas)
         {
-            _delegate = entityDelegate;
+            _team = team;
+            Id = Guid.NewGuid().ToString();
         }
 
         public EntityStruct GetStruct()
@@ -53,59 +54,66 @@ namespace IntelligentRobots.Entities
         {
             Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("image/simple"),
                 Position, null,
-                Color.Lerp(color, Color.Black, Crouching ? 0.25f : 0), Vector2.One * 16,
+                Color.Lerp(color, Color.Black, Crouching ? 0.25f : 0), 
+                Vector2.One * 16,
                 Angle - MathHelper.PiOver2, Radius / 16);
-
-
-
-            //var gm = Atlas.GetManager<Grid.GridManager>();
-            //gm.Trunk.DrawHeightGrid(gm.Trunk.CanSee(Position, Angle, FOV, Crouching), Color.White, Color.Transparent);
         }
+
+        public static void DrawEntity(AtlasGlobal atlas,  EntityStruct entity, Color color)
+        {
+            atlas.Graphics.DrawSprite(atlas.Content.GetContent<Texture2D>("image/simple"),
+                entity.position, null,
+                Color.Lerp(color, Color.Black, entity.crouching ? 0.25f : 0), 
+                Vector2.One * 16,
+                entity.angle - MathHelper.PiOver2, entity.radius / 16);
+        }
+
         public virtual void Collision(Vector2 v, Vector2 n) { }
 
 
         public virtual bool TryMove(Vector2 v) { return false; }
         public virtual bool TryCrouching(bool crouching) { return false; }
         public virtual bool TryFace(float v) { return false; }
-        public virtual bool TrySetDelegate(EntityDelegate entityDelegate)
+
+        public virtual bool IsHostile(EntityStruct struc)
         {
-            if (_delegate == null)
-            {
-                _delegate = entityDelegate;
-                return true;
-            }
-            else if (_delegate.Swappable(this, entityDelegate))
-            {
-                _delegate = entityDelegate;
-                return true;
-            }
-            return false; 
+            return !_team.OnTeam(struc);
         }
+
     }
 
     public struct EntityStruct
     {
         public Vector2 position, velocity;
 
-        public bool crouched, alive;
+        public bool crouching, alive;
 
         public float radius, fov, angle;
 
         public Type type;
 
+        private string _id;
+
         public EntityStruct(Entity e)
         {
-            type = e.GetType();
+            _id         = e.Id;
+
+            type        = e.GetType();
 
             position    = e.Position;
             velocity    = e.Velocity;
 
-            crouched    = e.Crouching;
+            crouching   = e.Crouching;
             alive       = e.Alive;
             angle       = e.Angle;
 
             fov         = e.FOV;
             radius      = e.Radius;
+        }
+
+        public bool Is(Entity e)
+        {
+            return _id == e.Id;
         }
     }
 }

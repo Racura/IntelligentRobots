@@ -44,11 +44,6 @@ namespace IntelligentRobots.Component
             get;
             protected set;
         }
-        public bool Debug
-        {
-            get;
-            protected set;
-        }
 
         public StateController(AtlasGlobal atlas)
             : base(atlas)
@@ -62,10 +57,15 @@ namespace IntelligentRobots.Component
         public override void Update(string arg)
         {
             base.Update(arg);
-            
+
             if (Atlas.Input.IsKeyJustReleased(Keys.Enter))
             {
                 State = State == GameState.Combat ? GameState.Paused : GameState.Combat;
+            }
+            if (Atlas.Input.IsKeyJustReleased(Keys.R))
+            {
+                State = GameState.Paused;
+                Atlas.GetManager<Entities.EntityManager>().NewGame();
             }
 
             if (Atlas.Input.IsKeyJustReleased(Keys.D1))
@@ -75,8 +75,6 @@ namespace IntelligentRobots.Component
             if (Atlas.Input.IsKeyJustReleased(Keys.D3))
                 this.Perpective = PerpectiveState.Entity;
 
-            if (Atlas.Input.IsKeyJustReleased(Keys.Tab))
-                Debug = !Debug;
 
             if (Atlas.Input.IsKeyJustReleased(Keys.Add))
                 PerpectiveNumber++;

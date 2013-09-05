@@ -16,13 +16,34 @@ namespace IntelligentRobots.Player
 {
     public class PlayerEntityDelegate : AtlasEntity, EntityDelegate
     {
+
         public PlayerEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
         {
         }
 
-        public void Update(Entity entity, EntityUtil util)
+        public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations)
         {
+            var rand = (int)(possibleLocations.Length * Atlas.Rand);
+
+            return new Human.HumanEntity(Atlas, team, 
+                new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand, 
+                            possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand));
+        }
+
+        public void HasAdded(EntityTeam team, Entity enitity)
+        {
+
+        }
+
+        public void Update(EntityTeam team, EntityReport report)
+        {
+            //_report = report;
+
+            if (team.TeamMembers.Length == 0) return;
+
+            var entity = team.TeamMembers[0];
+
             var cm = Atlas.GetManager<CameraManager>();
             Vector2 v = Vector2.Zero;
             var keys = Atlas.Input;
@@ -36,7 +57,7 @@ namespace IntelligentRobots.Player
             entity.TryCrouching(keys.IsKeyDown(Keys.LeftControl));
 
 
-            foreach(var t in keys.GetTouchCollection())
+            foreach (var t in keys.GetTouchCollection())
             {
                 v = cm.GetWorldPosition(t.Position, Vector2.One) - entity.Position;
             }
@@ -44,36 +65,14 @@ namespace IntelligentRobots.Player
             entity.TryFace((float)Math.Atan2(v.Y, v.X));
         }
 
-
-        public void Report(Entity entity, EntityReport report)
+        public void DebugDraw(EntityTeam team)
         {
+
         }
 
-        public void DebugDraw(Entity entity)
-        {
-            double d = entity.Angle;
-
-            Vector2 n1 = new Vector2((float)Math.Cos(d + entity.FOV * 0.5), (float)Math.Sin(d + entity.FOV * 0.5));
-            Vector2 n2 = new Vector2((float)Math.Cos(d - entity.FOV * 0.5), (float)Math.Sin(d - entity.FOV * 0.5));
-
-            var vpct = new VertexPositionColorTexture[4];
-
-            vpct[0].Position = vpct[2].Position = new Vector3(entity.Position, 0);
-
-            vpct[1].Position = new Vector3(entity.Position + n1 * 256, 0);
-            vpct[3].Position = new Vector3(entity.Position + n2 * 256, 0);
-
-            vpct[0].Color = vpct[1].Color =
-                vpct[2].Color = vpct[3].Color = Color.Green;
-            Atlas.Graphics.SetPrimitiveType(PrimitiveType.LineList);
-            Atlas.Graphics.DrawVector(vpct);
-        }
-
-
-        public bool Swappable(Entity entity, EntityDelegate entityDelegate)
+        public bool Swappable(EntityTeam team, EntityDelegate entityDelegate)
         {
             return true;
         }
-
     }
 }

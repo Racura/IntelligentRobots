@@ -14,17 +14,56 @@ namespace IntelligentRobots.Entities
 {
     public class EntityManager : AtlasManager
     {
-        public List<EntityTeam> _list;
+        private List<EntityTeam> _teams;
+        public List<EntityTeam> Teams { get { return _teams; } }
+
+        private object _key;
 
         public EntityManager(AtlasGlobal atlas)
             : base(atlas)
         {
-            _list = new List<EntityTeam>();
+            _teams = new List<EntityTeam>();
+
+            _key = new object();
         }
 
-        public void AddTeam(EntityTeam team)
+        public void AddTeam(EntityDelegate teamDelegate)
         {
-            _list.Add(team);
+            var team = new EntityTeam(Atlas, teamDelegate);
+            _teams.Add(team);
+            team.Lock(_key);
+        }
+
+        public void Clear()
+        {
+            foreach (var e in _teams)
+            {
+                e.UnLock(_key);
+                e.Clear();
+                e.Lock(_key);
+            }
+        }
+
+        public void NewGame()
+        {
+            Clear();
+
+
+            var gm = Atlas.GetManager<Grid.GridManager>();
+
+            double tmp = Math.PI * 2 * Atlas.Rand;
+
+            for (int i = 0; i < _teams.Count; i++)
+            {
+                var v = new Vector2((float)Math.Sin(i * Math.PI * 2 / _teams.Count + tmp) * 0.5f + 0.5f,
+                                    (float)Math.Cos(i * Math.PI * 2 / _teams.Count + tmp) * 0.5f + 0.5f);
+
+                var rect = new RectangleF(v.X * (gm.Trunk.Width - 120), v.Y * (gm.Trunk.Height - 120), 120, 120);
+
+                _teams[i].UnLock(_key);
+                _teams[i].Spawn(new RectangleF[] { rect });
+                _teams[i].Lock(_key);
+            }
         }
 
         public override void Update(string arg)
@@ -36,9 +75,11 @@ namespace IntelligentRobots.Entities
             if (state.State == StateController.GameState.Paused)
                 return;
 
-            foreach (var e in _list)
+            foreach (var e in _teams)
             {
+                e.UnLock(_key);
                 e.Update();
+                e.Lock(_key);
             }
 
             bool first = true;
@@ -46,9 +87,9 @@ namespace IntelligentRobots.Entities
             Vector2 min = new Vector2();
             Vector2 max = new Vector2();
 
-            foreach (var team in _list)
+            foreach (var team in _teams)
             {
-                foreach (var entity in team.Entities)
+                foreach (var entity in team.TeamMembers)
                 {
                     if (first)
                     {
@@ -66,17 +107,18 @@ namespace IntelligentRobots.Entities
                 }
             }
 
-            var cm = Atlas.GetManager<AtlasEngine.BasicManagers.CameraManager>();
-            cm.LookAt(10, 
-                new Vector2((max.X + min.X) * 0.5f, (max.Y + min.Y) * 0.5f), 
-                Math.Max(300, Vector2.Distance(max, min) * 0.7f), 2, 2);
-
-
+            if (!first)
+            {
+                var cm = Atlas.GetManager<AtlasEngine.BasicManagers.CameraManager>();
+                cm.LookAt(10,
+                    new Vector2((max.X + min.X) * 0.5f, (max.Y + min.Y) * 0.5f),
+                    Math.Max(250, Vector2.Distance(max, min) * 0.7f), 8, 8);
+            }
         }
 
         public override void Draw(int pass)
         {
-            foreach (var e in _list)
+            foreach (var e in _teams)
             {
                 e.Draw();
             }

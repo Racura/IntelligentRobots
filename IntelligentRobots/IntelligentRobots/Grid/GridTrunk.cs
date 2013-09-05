@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using AtlasEngine;
 using AtlasEngine.BasicManagers;
 
+using IntelligentRobots.Component;
+
 namespace IntelligentRobots.Grid
 {
     public class GridTrunk : AtlasEntity
@@ -39,9 +41,16 @@ namespace IntelligentRobots.Grid
 
         byte _value;
 
+
+        VertexPositionColorTexture[] _debugVpct;
+        int _debugCounter;
+
         public GridTrunk(AtlasGlobal atlas)
             : base(atlas)
         {
+            _debugVpct = new VertexPositionColorTexture[256];
+            _debugCounter = 0;
+
             _heightMap = new GridObject<byte>(64, 64, 0);
             _tileMap = new GridObject<short>(64, 64, 0);
 
@@ -82,6 +91,7 @@ namespace IntelligentRobots.Grid
 
         public void Update()
         {
+
             var cm = Atlas.GetManager<CameraManager>();
 
             foreach (var t in Atlas.Input.GetTouchCollection())
@@ -112,6 +122,17 @@ namespace IntelligentRobots.Grid
             {
                 DrawHeightGrid(_heightMap, Color.White, Color.Black);
             }
+
+
+            if (Atlas.Debug && _debugCounter > 0)
+            {
+                Atlas.Graphics.Flush();
+
+                Atlas.Graphics.SetPrimitiveType(PrimitiveType.LineList);
+                Atlas.Graphics.DrawVector(_debugVpct, _debugCounter);
+
+            }
+            _debugCounter = 0;
         }
 
         public void DrawHeightGrid(GridObject<byte> grid, Color min, Color max)
@@ -143,14 +164,14 @@ namespace IntelligentRobots.Grid
 
         public bool TryFindPath(Vector2 v1, Vector2 v2, float raduis, out List<Vector2> path)
         {
-            for(int i = 0; i < _width; i++)
-                for(int j = 0; j < _height; j++) 
-                    _visitedMap[i,j] = false;
-            
+            for (int i = 0; i < _width; i++)
+                for (int j = 0; j < _height; j++)
+                    _visitedMap[i, j] = false;
+
             int startX = (int)((v1.X - raduis * 0.99f) / _tileSize);
             int startY = (int)((v1.Y - raduis * 0.99f) / _tileSize);
-            int goalX =  (int)((v2.X - raduis * 0.99f) / _tileSize);
-            int goalY =  (int)((v2.Y - raduis * 0.99f) / _tileSize);
+            int goalX = (int)((v2.X - raduis * 0.99f) / _tileSize);
+            int goalY = (int)((v2.Y - raduis * 0.99f) / _tileSize);
 
             int tileSize = (int)((raduis * 2 - 1) / _tileSize) + 1;
             int d = (int)((raduis * 2 * TwoSqrt - 1) / _tileSize) + 1;
@@ -179,7 +200,7 @@ namespace IntelligentRobots.Grid
             {
                 float distance = float.MaxValue;
                 int current = -1;
-                
+
                 for (int i = 0; i < inList.Count; i++)
                 {
                     if (distance > inList[i].GetDistance())
@@ -207,7 +228,7 @@ namespace IntelligentRobots.Grid
                                     bool diagonal = Math.Abs(i - j) != 1;
 
                                     if (!diagonal || CanFit(
-                                        i + n.x - (i + 1) / 2, 
+                                        i + n.x - (i + 1) / 2,
                                         j + n.y - (j + 1) / 2, tileSize + 1))
                                     {
                                         var tmpNode = new GridNode(outList.Count, i + n.x, j + n.y,
@@ -267,10 +288,10 @@ namespace IntelligentRobots.Grid
 
         private bool CanFit(int x, int y, int tileSize)
         {
-            if(x + tileSize >= _width || y + tileSize >= _height || x < 0 || y < 0)
+            if (x + tileSize >= _width || y + tileSize >= _height || x < 0 || y < 0)
                 return false;
 
-            for (int i = 0; i < tileSize; i++ )
+            for (int i = 0; i < tileSize; i++)
                 for (int j = 0; j < tileSize; j++)
                     if (_heightMap.Get(x + i, y + j, 0) != 0)
                         return false;
@@ -362,15 +383,18 @@ namespace IntelligentRobots.Grid
         }
         #endregion
 
-        public byte Raytrace(Vector2 v1, Vector2 v2)
+        public bool Raytrace(Vector2 v1, Vector2 v2, int maxHeight)
         {
-            byte i = Raytrace(_tileSize, v1, v2);
+            var i = Raytrace(_tileSize, v1, v2, (byte)maxHeight) < maxHeight; ;
 
             return i;
         }
 
-        private byte Raytrace(float size, Vector2 v1, Vector2 v2)
+
+        private byte Raytrace(float size, Vector2 v1, Vector2 v2, byte maxHeight = MAX_HEIGHT)
         {
+            var debug = Atlas.Debug;
+
             float dx = Math.Abs(v2.X - v1.X);
             float dy = Math.Abs(v2.Y - v1.Y);
             
@@ -389,19 +413,33 @@ namespace IntelligentRobots.Grid
             dy *= 2;
 
             byte value = 0;
+            if (debug)
+            {
+                _debugVpct[_debugCounter * 2 + 0].Position = new Vector3(v1, 0);
+                _debugVpct[_debugCounter * 2 + 0].Color
+                    = _debugVpct[_debugCounter * 2 + 1].Color = Color.Red;
+            }
 
             for (; n > 0; --n)
             {
-                value = Math.Max(_heightMap.Get(x, y, MAX_HEIGHT), value);
+                value = Math.Max(_heightMap.Get(x, y, maxHeight), value);
 
                 if (x == x2 && y == y2)
                 {
                     break;
                 }
 
-                if (value >= MAX_HEIGHT)
-                    return MAX_HEIGHT;
+                if (value >= maxHeight)
+                {
+                    if (debug)
+                    {
+                        _debugVpct[_debugCounter * 2 + 1].Position
+                            = new Vector3(new Vector2(x + ((v2.X > v1.X) ? 0 : 1), y + ((v2.Y > v1.Y) ? 0 : 1)) * size, 0);
+                        _debugCounter++;
+                    }
 
+                    return (byte)maxHeight;
+                }
                 if (error > 0)
                 {
                     x += x_inc;
@@ -413,29 +451,15 @@ namespace IntelligentRobots.Grid
                     error += dx;
                 }
             }
-
-            return value;
-        }
-
-        public GridObject<byte> CanSee(Vector2 positon, float angle, float fov, bool crouching)
-        {
-            byte maxHeight = (byte)(crouching ? 1 : 2);
-
-            GridObject<byte> sightGrid = new GridObject<byte>(Width, Height, (byte)(3));
-            sightGrid.SetType = GridObjectSetType.Min;
-
-            GridRay ray = new GridRay();
-
-            for (float i = angle - fov * 0.5f; i < angle + fov * 0.5f; i += 0.02f)
+            if (debug)
             {
-                Vector2 n = new Vector2((float)Math.Cos(i), (float)Math.Sin(i));
-
-                ray.Setup(positon, n);
-
-                ray.Grid(_tileSize, maxHeight, _heightMap, sightGrid);
+                _debugVpct[_debugCounter * 2 + 1].Position = new Vector3(v2, 0);
+                _debugVpct[_debugCounter * 2 + 0].Color
+                    = _debugVpct[_debugCounter * 2 + 1].Color = Color.Green;
+                _debugCounter++;
             }
 
-            return sightGrid;
+            return value;
         }
 
         public byte[,] CanSee(int x, int y, byte height)
@@ -445,7 +469,6 @@ namespace IntelligentRobots.Grid
                 _sightMap = new byte[_width, _height][][,];
 
             Vector2 v = new Vector2(x + 0.5f, y + 0.5f);
-            //Vector2 v = new Vector2(x + 0.5f, y + 0.5f) * _tileSize;
             
             if (_sightMap[x, y] == null)
             {

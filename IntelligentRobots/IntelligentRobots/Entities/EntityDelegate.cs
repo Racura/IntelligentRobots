@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using AtlasEngine;
+
 namespace IntelligentRobots.Entities
 {
     public interface EntityDelegate
     {
-        void Update(Entity entity, EntityUtil util);
-        void Report(Entity entity, EntityReport report);
-        void DebugDraw(Entity entity);
+        Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations);
+        void HasAdded(EntityTeam team, Entity enitity);
 
-        bool Swappable(Entity entity, EntityDelegate entityDelegate);
+        void Update(EntityTeam team, EntityReport report);
+
+        void DebugDraw(EntityTeam team);
+
+        bool Swappable(EntityTeam team, EntityDelegate entityDelegate);
     }
 }

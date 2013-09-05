@@ -79,26 +79,22 @@
     <Compile Include="Component\StateController.cs" />
     <Compile Include="Entities\EntityReport.cs" />
     <Compile Include="TeamKris\KrisEntityDelegate.cs" />
-    <Compile Include="TeamKris\KrisManager.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityDelegate.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\EntityTeam.cs" />
-    <Compile Include="Entities\EntityUtil.cs" />
     <Compile Include="Grid\GridCollision.cs" />
     <Compile Include="Grid\GridJson.cs" />
     <Compile Include="Grid\GridManager.cs" />
     <Compile Include="Grid\GridObject.cs" />
     <Compile Include="Grid\GridRay.cs" />
     <Compile Include="Grid\GridTrunk.cs" />
-    <Compile Include="Human\HumanEntity.cs" />
+    <Compile Include="EntityTypes\HumanEntity.cs" />
     <Compile Include="Player\PlayerEntityDelegate.cs" />
-    <Compile Include="Player\PlayerManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="TeamAlek\AlekEntityDelegate.cs" />
-    <Compile Include="TeamAlek\AlekManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

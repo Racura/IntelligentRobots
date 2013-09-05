@@ -42,11 +42,13 @@ namespace IntelligentRobots.Human
 
         public override float FOV { get { return _fov; } }
 
-        public HumanEntity(AtlasGlobal atlas, EntityDelegate entityDelegate)
-            : base(atlas, entityDelegate)
+        public HumanEntity(AtlasGlobal atlas, EntityTeam team, Vector2 position)
+            : base(atlas, team)
         {
             _radius = 14;
             _angle = 0;
+
+            this._position = position;
 
             _wantedVelocity = Vector2.Zero;
         }
@@ -64,9 +66,8 @@ namespace IntelligentRobots.Human
             }
 
 
-            while (Math.Abs(_wantedAngle - _angle) > Math.PI)
+            while (Math.Abs(_wantedAngle - _angle) > Math.PI + 0.000001f)
                 _wantedAngle -= (float)(Math.Sign(_wantedAngle - _angle) * 2 * Math.PI);
-
 
             _angle += Math.Min(Math.Abs(_wantedAngle - _angle), Atlas.Elapsed * 4) * Math.Sign(_wantedAngle - _angle);
 
@@ -129,15 +130,6 @@ namespace IntelligentRobots.Human
                 Math.Sign(Velocity.X) * Math.Min(Math.Abs(_velocity.X), 1 - Math.Abs(n.X)),
                 Math.Sign(_velocity.Y) * Math.Min(Math.Abs(_velocity.Y), 1 - Math.Abs(n.Y))
             );
-        }
-
-        public static HumanEntity CreateAt(AtlasGlobal atlas, RectangleF rect)
-        {
-            var h = new HumanEntity(atlas, null);
-
-            h._position = new Vector2(rect.X + rect.Width * atlas.Rand, rect.Y + rect.Height * atlas.Rand);
-
-            return h;
         }
     }
 }

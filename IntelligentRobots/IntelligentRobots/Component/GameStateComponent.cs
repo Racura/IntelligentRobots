@@ -52,9 +52,11 @@ namespace IntelligentRobots.Component
 
 
 
-            _entites.AddTeam(new TeamAlek.AlekManager(Atlas));
-            _entites.AddTeam(new TeamKris.KrisManager(Atlas));
-            _entites.AddTeam(new Player.PlayerManager(Atlas));
+            //_entites.AddTeam(new TeamAlek.AlekManager(Atlas));
+            //_entites.AddTeam(new TeamKris.KrisManager(Atlas));
+            _entites.AddTeam(new Player.PlayerEntityDelegate(Atlas));
+            _entites.AddTeam(new Player.PlayerEntityDelegate(Atlas));
+            _entites.AddTeam(new Player.PlayerEntityDelegate(Atlas));
         }
 
         public override void PreDraw()
