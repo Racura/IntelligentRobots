@@ -9,7 +9,7 @@ namespace IntelligentRobots.Entities
 {
     public interface EntityDelegate
     {
-        Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations);
+        Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk);
         void HasAdded(EntityTeam team, Entity enitity);
 
         void Update(EntityTeam team, EntityReport report);
