@@ -101,7 +101,7 @@ namespace IntelligentRobots.Grid
                 tmp.Y = MathHelper.Clamp(tmp.Y, 0, _tileSize * _height - 1);
                 tmp.X = MathHelper.Clamp(tmp.X, 0, _tileSize * _width - 1);
 
-                if (t.State == TouchLocationState.Released)
+                if (t.State == TouchLocationState.Pressed)
                 {
                     _value = (byte)((_heightMap.Get((int)(tmp.X / _tileSize), (int)(tmp.Y / _tileSize), 0) + 1) % (MAX_HEIGHT + 1));
 
@@ -286,7 +286,7 @@ namespace IntelligentRobots.Grid
             return true;
         }
 
-        private bool CanFit(int x, int y, int tileSize)
+        public bool CanFit(int x, int y, int tileSize)
         {
             if (x + tileSize >= _width || y + tileSize >= _height || x < 0 || y < 0)
                 return false;

@@ -23,7 +23,7 @@ namespace IntelligentRobots.Player
             
         }
 
-        public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations)
+        public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
         {
             var rand = (int)(possibleLocations.Length * Atlas.Rand);
 
