@@ -21,7 +21,7 @@ namespace IntelligentRobots.Entities
         private Entity[] _teamArray;
         public Entity[] TeamMembers { get { return _teamArray; } }
 
-        public Color Color { get; protected set; }
+        public Color Color { get;  set; }
 
 
         public bool Locked { get; private set; }

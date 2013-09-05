@@ -14,38 +14,34 @@ using IntelligentRobots.Entities;
 
 namespace IntelligentRobots.EntityTypes
 {
-    public class HumanEntity : Entities.Entity
+    public class SeekerEntity : Entities.Entity
     {
-        public const float STANDING_SPEED = 192;
-        public const float CROUCHING_SPEED = 64;
+        public const float SPEED = 164;
+        
 
-        private bool _crouching;
         private float _radius;
         private Vector2 _position;
         private Vector2 _velocity;
         private float _angle;
 
 
-        private float _fov;
 
         private Vector2 _wantedVelocity;
         private float _wantedAngle;
-        private float _crouchHeight;
-        private bool _wantedCrouching;
 
-        public override bool Crouching { get { return _crouching; } }
+        public override bool Crouching { get { return true; } }
         public override float Radius { get { return _radius; } }
         public override Vector2 Position { get { return _position; } }
         public override Vector2 Velocity { get { return _velocity; } }
 
         public override float Angle { get { return _angle; } }
 
-        public override float FOV { get { return _fov; } }
+        public override float FOV { get { return MathHelper.TwoPi; } }
 
-        public HumanEntity(AtlasGlobal atlas, EntityTeam team, Vector2 position)
+        public SeekerEntity(AtlasGlobal atlas, EntityTeam team, Vector2 position)
             : base(atlas, team)
         {
-            _radius = 14;
+            _radius = 10;
             _angle = 0;
 
             this._position = position;
@@ -55,14 +51,14 @@ namespace IntelligentRobots.EntityTypes
 
         public override void Update()
         {
-            _crouchHeight = MathHelper.Clamp(_crouchHeight + Atlas.Elapsed * 4f * (_wantedCrouching ? -1 : 1), 0, 1);
+            //_crouchHeight = MathHelper.Clamp(_crouchHeight + Atlas.Elapsed * 4f * (_wantedCrouching ? -1 : 1), 0, 1);
 
-            float speed = (CROUCHING_SPEED + (STANDING_SPEED - CROUCHING_SPEED) * _crouchHeight) / STANDING_SPEED;
+            
 
-            if (_wantedVelocity.LengthSquared() > speed * speed)
+            if (_wantedVelocity.LengthSquared() > SPEED * SPEED)
             {
                 _wantedVelocity.Normalize();
-                _wantedVelocity = _wantedVelocity * speed;
+                _wantedVelocity = _wantedVelocity * SPEED;
             }
 
 
@@ -84,16 +80,8 @@ namespace IntelligentRobots.EntityTypes
             else
             {
                 float spec = (float)(1 - RadianDifference((float)Math.Atan2(_velocity.Y, _velocity.X), _angle) / Math.PI) * 0.5f;
-                _position += _velocity * (STANDING_SPEED * Atlas.Elapsed * (0.5f + spec));
+                _position += _velocity * (SPEED * Atlas.Elapsed * (0.5f + spec));
             }
-
-            float tmpFov = 1.5f + _crouchHeight * 1.5f - _velocity.LengthSquared() * 1.5f;
-
-            _fov = tmpFov < _fov ? tmpFov : (_fov - (_fov - tmpFov) * Atlas.Elapsed);
-
-
-
-            _crouching = _crouchHeight <= 0.1f;
         }
 
         private float RadianDifference(float r1, float r2)
@@ -111,8 +99,8 @@ namespace IntelligentRobots.EntityTypes
 
         public override bool TryCrouching(bool crouching)
         {
-            _wantedCrouching = crouching;
-            return true;
+            //_wantedCrouching = crouching;
+            return false;
         }
 
         public override bool TryFace(float angle)

@@ -14,19 +14,20 @@ using AtlasEngine.BasicManagers;
 
 namespace IntelligentRobots.Player
 {
-    public class PlayerEntityDelegate : AtlasEntity, EntityDelegate
+    public class SeekerEntityDelegate : AtlasEntity, EntityDelegate
     {
 
-        public PlayerEntityDelegate(AtlasGlobal atlas)
+        public SeekerEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
         {
+            
         }
 
         public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations)
         {
             var rand = (int)(possibleLocations.Length * Atlas.Rand);
 
-            return new EntityTypes.HumanEntity(Atlas, team, 
+            return new EntityTypes.SeekerEntity(Atlas, team, 
                 new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand, 
                             possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand));
         }
@@ -39,7 +40,7 @@ namespace IntelligentRobots.Player
         public void Update(EntityTeam team, EntityReport report)
         {
             //_report = report;
-
+            team.Color = Color.Red;
             if (team.TeamMembers.Length == 0) return;
 
             var entity = team.TeamMembers[0];
