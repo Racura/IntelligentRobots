@@ -101,7 +101,7 @@ namespace IntelligentRobots.Grid
                 tmp.Y = MathHelper.Clamp(tmp.Y, 0, _tileSize * _height - 1);
                 tmp.X = MathHelper.Clamp(tmp.X, 0, _tileSize * _width - 1);
 
-                if (t.State == TouchLocationState.Released)
+                if (t.State == TouchLocationState.Pressed)
                 {
                     _value = (byte)((_heightMap.Get((int)(tmp.X / _tileSize), (int)(tmp.Y / _tileSize), 0) + 1) % (MAX_HEIGHT + 1));
 
@@ -173,7 +173,9 @@ namespace IntelligentRobots.Grid
             int goalX = (int)((v2.X - raduis * 0.99f) / _tileSize);
             int goalY = (int)((v2.Y - raduis * 0.99f) / _tileSize);
 
-            int tileSize = (int)((raduis * 2 - 1) / _tileSize) + 1;
+            //int tileSize = (int)((raduis * 2 - 1) / _tileSize) + 1;
+            float r = raduis / _tileSize;
+            
             int d = (int)((raduis * 2 * TwoSqrt - 1) / _tileSize) + 1;
 
             bool success = false;
@@ -195,6 +197,8 @@ namespace IntelligentRobots.Grid
             List<GridNode> outList = new List<GridNode>();
 
             _visitedMap[startX, startY] = true;
+
+            float offset = 0.0f;
 
             while (inList.Count > 0 && !success)
             {
@@ -223,13 +227,12 @@ namespace IntelligentRobots.Grid
                         {
                             if (i + n.x >= 0 && i + n.x < _width && j + n.y >= 0 && j + n.y < _height)
                             {
-                                if (CanFit(i + n.x, j + n.y, tileSize))
+                                if (CanFit(i + n.x + offset, j + n.y + offset, r))
                                 {
                                     bool diagonal = Math.Abs(i - j) != 1;
 
-                                    if (!diagonal || CanFit(
-                                        i + n.x - (i + 1) / 2,
-                                        j + n.y - (j + 1) / 2, tileSize + 1))
+                                    if (!diagonal ||
+                                        CanFit(i + n.x + offset + i * 0.5f, j + n.y + offset + j * 0.5f, r))
                                     {
                                         var tmpNode = new GridNode(outList.Count, i + n.x, j + n.y,
                                                 n.steps + (diagonal ? TwoSqrt : 1),
@@ -273,12 +276,12 @@ namespace IntelligentRobots.Grid
 
             path = new List<Vector2>();
 
-            path.Add(new Vector2((node.x) * _tileSize + raduis, (node.y) * _tileSize + raduis));
+            path.Add(new Vector2((node.x + offset) * _tileSize, (node.y + offset) * _tileSize));
 
             while (node.parent != -1)
             {
                 node = outList[node.parent];
-                path.Add(new Vector2((node.x) * _tileSize + raduis, (node.y) * _tileSize + raduis));
+                path.Add(new Vector2((node.x + offset) * _tileSize, (node.y + offset) * _tileSize));
             }
 
             path.Reverse();
@@ -286,7 +289,7 @@ namespace IntelligentRobots.Grid
             return true;
         }
 
-        private bool CanFit(int x, int y, int tileSize)
+        /*public bool CanFit(int x, int y, int tileSize)
         {
             if (x + tileSize >= _width || y + tileSize >= _height || x < 0 || y < 0)
                 return false;
@@ -296,6 +299,23 @@ namespace IntelligentRobots.Grid
                     if (_heightMap.Get(x + i, y + j, 0) != 0)
                         return false;
 
+
+            return true;
+        }*/
+
+        public bool CanFit(float centerX, float centerY, float radius)
+        {
+
+            for (int y =         -(int)(radius + 1); y <= (radius + 1); y++)
+                for (int x =     -(int)(radius + 1); x <= (radius + 1); x++)
+                {
+                    float tmpX = x + (x < 0 ? 1 : 0);
+                    float tmpY = y + (y < 0 ? 1 : 0);
+
+                    if (tmpX * tmpX + tmpY * tmpY <= (radius * radius)
+                        && _heightMap.Get((int)(x + centerX), (int)(y + centerY), 0) != 0)
+                        return false;
+                }
 
             return true;
         }
@@ -393,7 +413,7 @@ namespace IntelligentRobots.Grid
 
         private byte Raytrace(float size, Vector2 v1, Vector2 v2, byte maxHeight = MAX_HEIGHT)
         {
-            var debug = Atlas.Debug;
+            var debug = Atlas.Debug && false;
 
             float dx = Math.Abs(v2.X - v1.X);
             float dy = Math.Abs(v2.Y - v1.Y);

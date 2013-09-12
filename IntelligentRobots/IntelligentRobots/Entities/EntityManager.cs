@@ -53,14 +53,18 @@ namespace IntelligentRobots.Entities
 
             double tmp = Math.PI * 2 * Atlas.Rand;
 
+            int size = 200;
+
             for (int i = 0; i < _teams.Count; i++)
             {
                 var v = new Vector2((float)Math.Sin(i * Math.PI * 2 / _teams.Count + tmp) * 0.5f + 0.5f,
                                     (float)Math.Cos(i * Math.PI * 2 / _teams.Count + tmp) * 0.5f + 0.5f);
 
-                var rect = new RectangleF(v.X * (gm.Trunk.Width - 120), v.Y * (gm.Trunk.Height - 120), 120, 120);
+                var rect = new RectangleF(v.X * (gm.Trunk.Width - size), v.Y * (gm.Trunk.Height - size), size, size);
 
                 _teams[i].UnLock(_key);
+                _teams[i].Spawn(new RectangleF[] { rect });
+                _teams[i].Spawn(new RectangleF[] { rect });
                 _teams[i].Spawn(new RectangleF[] { rect });
                 _teams[i].Lock(_key);
             }
@@ -72,7 +76,7 @@ namespace IntelligentRobots.Entities
 
             var state = Atlas.GetStateController<StateController>();
 
-            if (state.State == StateController.GameState.Paused)
+            if (state.State != StateController.GameState.Combat)
                 return;
 
             foreach (var e in _teams)

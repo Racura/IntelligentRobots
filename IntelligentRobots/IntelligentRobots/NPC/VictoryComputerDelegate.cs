@@ -22,6 +22,15 @@ namespace IntelligentRobots.NPC
         {
         }
 
+        public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
+        {
+            var rand = (int)(possibleLocations.Length * Atlas.Rand);
+
+            return new EntityTypes.VictoryComputerEntity(Atlas, team, 
+                new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand, 
+                            possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand));
+        }
+
         public void HasAdded(EntityTeam team, Entity enitity)
         {
 
@@ -42,15 +51,9 @@ namespace IntelligentRobots.NPC
             return true;
         }
 
-        public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
+
+        public void Restart(EntityTeam team)
         {
-            var rand = (int)(possibleLocations.Length * Atlas.Rand);
-
-            
-
-            return new EntityTypes.VictoryComputerEntity(Atlas, team,
-                new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand,
-                            possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand));
         }
     }
 }

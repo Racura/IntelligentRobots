@@ -194,13 +194,9 @@ namespace IntelligentRobots.TeamAlek
     //Controlls team
     public class AlekEntityDelegate : AtlasEntity, EntityDelegate
     {
-        List<Vector2> _vectorList;
-        int _version;
-        Vector2 _destination;
-        float timer;
-        Vector2 _direction;
-        bool panic = false;
-        float panicTimer = 0f;
+
+        LinkedList<AlekEntitySubDelegate> team = new LinkedList<AlekEntitySubDelegate>();
+        
 
         public AlekEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
@@ -244,6 +240,11 @@ namespace IntelligentRobots.TeamAlek
             entityTeam.Color = AtlasColorSystem.GetColorFromHue(Atlas.TotalTime * 360); ;
             if (entityTeam.TeamMembers.Length == 0) return;
             var entity = entityTeam.TeamMembers[0];
+
+            foreach (Entity e in entityTeam.TeamMembers)
+            {
+
+            }
             
             //entity.TryCrouching((report.SightList.Count > 0));
             Vector2? destination = getWinPosition(entity, report);

@@ -56,7 +56,7 @@ namespace IntelligentRobots.EntityTypes
         public override void Update()
         {
             _crouchHeight = MathHelper.Clamp(_crouchHeight + Atlas.Elapsed * 4f * (_wantedCrouching ? -1 : 1), 0, 1);
-
+ 
             float speed = (CROUCHING_SPEED + (STANDING_SPEED - CROUCHING_SPEED) * _crouchHeight) / STANDING_SPEED;
 
             if (_wantedVelocity.LengthSquared() > speed * speed)

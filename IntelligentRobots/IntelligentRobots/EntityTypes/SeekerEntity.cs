@@ -36,7 +36,7 @@ namespace IntelligentRobots.EntityTypes
 
         public override float Angle { get { return _angle; } }
 
-        public override float FOV { get { return MathHelper.TwoPi; } }
+        public override float FOV { get { return MathHelper.Pi * 1.5f; } }
 
         public SeekerEntity(AtlasGlobal atlas, EntityTeam team, Vector2 position)
             : base(atlas, team)
@@ -53,12 +53,13 @@ namespace IntelligentRobots.EntityTypes
         {
             //_crouchHeight = MathHelper.Clamp(_crouchHeight + Atlas.Elapsed * 4f * (_wantedCrouching ? -1 : 1), 0, 1);
 
-            
 
-            if (_wantedVelocity.LengthSquared() > SPEED * SPEED)
+            float speed = 1;
+
+            if (_wantedVelocity.LengthSquared() > speed * speed)
             {
                 _wantedVelocity.Normalize();
-                _wantedVelocity = _wantedVelocity * SPEED;
+                _wantedVelocity = _wantedVelocity * speed;
             }
 
 
@@ -71,7 +72,7 @@ namespace IntelligentRobots.EntityTypes
                 _angle = _angle - (float)(Math.Sign(_angle) * 2 * Math.PI);
                         
 
-            _velocity += (_wantedVelocity - _velocity) * (8 * Atlas.Elapsed);
+            _velocity += (_wantedVelocity - _velocity) * (16 * Atlas.Elapsed);
 
             if (Math.Abs(_velocity.X) < 0.001f && Math.Abs(_velocity.Y) < 0.001f)
             {
