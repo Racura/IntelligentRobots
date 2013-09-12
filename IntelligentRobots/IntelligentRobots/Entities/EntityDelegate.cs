@@ -12,6 +12,7 @@ namespace IntelligentRobots.Entities
         Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk);
         void HasAdded(EntityTeam team, Entity enitity);
 
+        void Restart(EntityTeam team);
         void Update(EntityTeam team, EntityReport report);
 
         void DebugDraw(EntityTeam team);

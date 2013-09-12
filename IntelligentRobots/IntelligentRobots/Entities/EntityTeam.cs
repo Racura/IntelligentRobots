@@ -122,6 +122,8 @@ namespace IntelligentRobots.Entities
 
             _team.Clear();
             _teamArray = _team.ToArray();
+
+            if (_delegate != null) _delegate.Restart(this);
         }
     }
 }

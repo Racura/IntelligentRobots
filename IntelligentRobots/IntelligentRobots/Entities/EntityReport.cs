@@ -12,6 +12,8 @@ namespace IntelligentRobots.Entities
         private GridTrunk _trunk;
         private Dictionary<Entity, EntityStruct[]> _sightList;
 
+        public float TimeStamp { get; protected set; }
+
         public bool Locked
         {
             get;
@@ -36,13 +38,9 @@ namespace IntelligentRobots.Entities
                     _trunk = value;
             }
         }
-        public float TimeStamp
-        {
-            get { return 0; }
-        }
 
 
-        public EntityReport(GridTrunk trunk)
+        public EntityReport(GridTrunk trunk, float timeStamp)
         {
             Locked = false;
             _trunk = trunk;

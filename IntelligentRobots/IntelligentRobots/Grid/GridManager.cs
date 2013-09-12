@@ -58,48 +58,58 @@ namespace IntelligentRobots.Grid
             }
 
 
-            foreach (var t in teams)
+            var state = Atlas.GetStateController<Component.StateController>();
+
+            if (state.State == Component.StateController.GameState.Combat)
             {
-                EntityReport report = new EntityReport(_trunk);
 
-                if (t.Delegate == null) continue;
-
-                foreach (var e1 in t.TeamMembers)
+                foreach (var t in teams)
                 {
-                    List<EntityStruct> _list = new List<EntityStruct>();
+                    EntityReport report = new EntityReport(_trunk, Atlas.TotalTime);
 
-                    Vector2 facingPos = new Vector2((float)Math.Cos(e1.Angle + e1.FOV * 0.5), (float)Math.Sin(e1.Angle + e1.FOV * 0.5));
-                    Vector2 facingNeg = new Vector2((float)Math.Cos(e1.Angle - e1.FOV * 0.5), (float)Math.Sin(e1.Angle - e1.FOV * 0.5));
+                    if (t.Delegate == null) continue;
 
-                    foreach (var e2 in entityList)
+                    foreach (var e1 in t.TeamMembers)
                     {
-                        if (e1 == e2) continue;
+                        List<EntityStruct> _list = new List<EntityStruct>();
 
-                        var n = Vector2.Normalize(e2.Position - e1.Position);
+                        Vector2 facingPos = new Vector2((float)Math.Cos(e1.Angle + e1.FOV * 0.5), (float)Math.Sin(e1.Angle + e1.FOV * 0.5));
+                        Vector2 facingNeg = new Vector2((float)Math.Cos(e1.Angle - e1.FOV * 0.5), (float)Math.Sin(e1.Angle - e1.FOV * 0.5));
 
-
-                        for (int i = 0; i < 5; i++)
+                        foreach (var e2 in entityList)
                         {
-                            Vector2 testNormal = new Vector2(
-                                e2.Position.X + n.Y * e2.Radius * ((i - 2f) / 2),
-                                e2.Position.Y - n.X * e2.Radius * ((i - 2f) / 2));
+                            if (e1 == e2) continue;
+
+                            var n = Vector2.Normalize(e2.Position - e1.Position);
 
 
-                            if (facingPos.X * (testNormal.Y - e1.Position.Y) - facingPos.Y * (testNormal.X - e1.Position.X) > 0
-                                || facingNeg.X * (testNormal.Y - e1.Position.Y) - facingNeg.Y * (testNormal.X - e1.Position.X) < 0)
-                                continue;
-
-                            if (Trunk.Raytrace(e1.Position, testNormal, (e1.Crouching || e2.Crouching) ? 1 : 2))
+                            for (int i = 0; i < 5; i++)
                             {
-                                _list.Add(e2.GetStruct());
-                                break;
+                                Vector2 testNormal = new Vector2(
+                                    e2.Position.X + n.Y * e2.Radius * ((i - 2f) / 2),
+                                    e2.Position.Y - n.X * e2.Radius * ((i - 2f) / 2));
+
+
+                                if (e1.FOV < Math.PI * 2 
+                                    && ((e1.FOV < Math.PI 
+                                        && (facingPos.X * (testNormal.Y - e1.Position.Y) - facingPos.Y * (testNormal.X - e1.Position.X) > 0
+                                            || facingNeg.X * (testNormal.Y - e1.Position.Y) - facingNeg.Y * (testNormal.X - e1.Position.X) < 0))
+                                    || (facingPos.X * (testNormal.Y - e1.Position.Y) - facingPos.Y * (testNormal.X - e1.Position.X) > 0
+                                            && facingNeg.X * (testNormal.Y - e1.Position.Y) - facingNeg.Y * (testNormal.X - e1.Position.X) < 0)))
+                                    continue;
+
+                                if (Trunk.Raytrace(e1.Position, testNormal, (e1.Crouching || e2.Crouching) ? 1 : 2))
+                                {
+                                    _list.Add(e2.GetStruct());
+                                    break;
+                                }
                             }
                         }
+                        report.SightList.Add(e1, _list.ToArray());
                     }
-                    report.SightList.Add(e1, _list.ToArray());
-                }
 
-                t.Delegate.Update(t, report);
+                    t.Delegate.Update(t, report);
+                }
             }
 
             Atlas.GetManager<AtlasEngine.BasicManagers.CameraManager>().LookAt(1,

@@ -16,16 +16,11 @@ namespace IntelligentRobots.EntityTypes
 {
     public class VictoryComputerEntity : Entities.Entity
     {
-        public const float SPEED = 164;
-        
-
         private Vector2 _position;
 
+        private float _angle;
 
-
-        private Vector2 _wantedVelocity;
-        private float _wantedAngle;
-
+        public override float Angle { get { return _angle; } }
         public override bool Crouching { get { return false; } }
         public override float Radius { get { return 24; } }
         public override Vector2 Position { get { return _position; } }
@@ -33,15 +28,14 @@ namespace IntelligentRobots.EntityTypes
         public VictoryComputerEntity(AtlasGlobal atlas, EntityTeam team, Vector2 position)
             : base(atlas, team)
         {
-
             this._position = position;
-
-            _wantedVelocity = Vector2.Zero;
         }
 
         public override void Update()
         {
             //I do nothing :(
+            _angle += Atlas.Elapsed * (Math.Sign(Math.Sin(Atlas.TotalTime)));
+            
         }
 
         public override void Collision(Vector2 v, Vector2 n)

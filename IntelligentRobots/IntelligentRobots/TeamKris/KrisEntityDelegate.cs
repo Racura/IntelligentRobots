@@ -18,18 +18,19 @@ namespace IntelligentRobots.TeamKris
 {
     public class KrisEntityDelegate : AtlasEntity, EntityDelegate
     {
-        public List<SeekerDelegate> seekers;
+        public List<SeekerDelegate> _seekers;
+        public EntityReport Report{get;protected set;}
 
         public KrisEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
         {
-            seekers = new List<SeekerDelegate>();
+            _seekers = new List<SeekerDelegate>();
         }
 
         public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
         {
             if (team.TeamMembers.Length == 0)
-                seekers.Clear();
+                _seekers.Clear();
 
             var rand = (int)(possibleLocations.Length * Atlas.Rand);
 
@@ -42,13 +43,15 @@ namespace IntelligentRobots.TeamKris
         {
             if (entity is SeekerEntity)
             {
-                seekers.Add(new SeekerDelegate(this, entity));
+                _seekers.Add(new SeekerDelegate(this, entity));
             }
         }
 
         public void Update(EntityTeam team, EntityReport report)
         {
-            foreach (var s in seekers)
+            Report = report;
+
+            foreach (var s in _seekers)
             {
                 if (s.WantsObjective)
                 {
@@ -61,11 +64,17 @@ namespace IntelligentRobots.TeamKris
 
         public void DebugDraw(EntityTeam team)
         {
+            foreach (var e in team.TeamMembers)
+            {
+                EntityDebug.DrawFov(Atlas, e);
+            }
 
-            foreach (var s in seekers)
+            Atlas.Graphics.Flush();
+            foreach (var s in _seekers)
             {
                 s.DrawCurrentPath(Atlas);
             }
+            Atlas.Graphics.Flush();
         }
 
         public bool Swappable(EntityTeam team, EntityDelegate entityDelegate)

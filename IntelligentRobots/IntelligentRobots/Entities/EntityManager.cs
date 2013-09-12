@@ -76,7 +76,7 @@ namespace IntelligentRobots.Entities
 
             var state = Atlas.GetStateController<StateController>();
 
-            if (state.State == StateController.GameState.Paused)
+            if (state.State != StateController.GameState.Combat)
                 return;
 
             foreach (var e in _teams)

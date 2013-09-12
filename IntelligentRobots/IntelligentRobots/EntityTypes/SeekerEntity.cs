@@ -36,7 +36,7 @@ namespace IntelligentRobots.EntityTypes
 
         public override float Angle { get { return _angle; } }
 
-        public override float FOV { get { return MathHelper.TwoPi; } }
+        public override float FOV { get { return MathHelper.Pi * 1.5f; } }
 
         public SeekerEntity(AtlasGlobal atlas, EntityTeam team, Vector2 position)
             : base(atlas, team)

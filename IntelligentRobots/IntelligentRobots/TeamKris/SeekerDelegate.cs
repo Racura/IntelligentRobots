@@ -81,6 +81,7 @@ namespace IntelligentRobots.TeamKris
                 Vector2 wantedDir = (_path[0] - _entity.Position) * 1;
 
                 _entity.TryMove(wantedDir);
+                _entity.TryFace((float)(Math.Atan2(wantedDir.Y, wantedDir.X) + Math.Sin(_teamDelegate.Report.TimeStamp)));
             }
         }
 
@@ -97,15 +98,13 @@ namespace IntelligentRobots.TeamKris
             for (int i = 0; i < _path.Count; i++)
             {
                 vpct[i].Position = new Vector3(_path[i], 0);
-                vpct[i].Color = AtlasColorSystem.GetColorFromHue(i * 16);
+                vpct[i].Color = AtlasColorSystem.GetColorFromHue(i * 16) * 0.5f;
             }
 
-            atlas.Graphics.Flush();
 
             atlas.Graphics.SetPrimitiveType(PrimitiveType.LineStrip);
             atlas.Graphics.DrawVector(vpct);
 
-            atlas.Graphics.Flush();
         }
 
     }
