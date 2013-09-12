@@ -74,5 +74,9 @@ namespace IntelligentRobots.Player
         {
             return true;
         }
+
+        public void Restart(EntityTeam team)
+        {
+        }
     }
 }

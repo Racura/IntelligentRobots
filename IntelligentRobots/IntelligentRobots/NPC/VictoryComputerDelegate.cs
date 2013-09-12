@@ -50,5 +50,10 @@ namespace IntelligentRobots.NPC
         {
             return true;
         }
+
+
+        public void Restart(EntityTeam team)
+        {
+        }
     }
 }

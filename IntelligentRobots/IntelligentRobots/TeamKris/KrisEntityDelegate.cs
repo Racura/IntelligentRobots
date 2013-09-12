@@ -29,9 +29,6 @@ namespace IntelligentRobots.TeamKris
 
         public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
         {
-            if (team.TeamMembers.Length == 0)
-                _seekers.Clear();
-
             var rand = (int)(possibleLocations.Length * Atlas.Rand);
 
             return new SeekerEntity(Atlas, team,
@@ -80,6 +77,12 @@ namespace IntelligentRobots.TeamKris
         public bool Swappable(EntityTeam team, EntityDelegate entityDelegate)
         {
             return true;
+        }
+
+
+        public void Restart(EntityTeam team)
+        {
+            _seekers.Clear();
         }
     }
 }
