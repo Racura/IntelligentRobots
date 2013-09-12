@@ -82,7 +82,6 @@
     <Compile Include="EntityTypes\VictoryComputerEntity.cs" />
     <Compile Include="EntityTypes\SeekerEntity.cs" />
     <Compile Include="NPC\VictoryComputerDelegate.cs" />
-    <Compile Include="Player\SeekerEntityDelegate.cs" />
     <Compile Include="TeamAlek\AlekEntitySubDelegate.cs" />
     <Compile Include="TeamKris\SeekerDelegate.cs" />
     <Compile Include="TeamKris\KrisEntityDelegate.cs" />
