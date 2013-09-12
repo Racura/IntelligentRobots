@@ -55,7 +55,7 @@ namespace IntelligentRobots.Component
 
             //_entites.AddTeam(new TeamAlek.AlekManager(Atlas));
             //_entites.AddTeam(new TeamKris.KrisManager(Atlas));
-            _entites.AddTeam(new Player.PlayerEntityDelegate(Atlas));
+            _entites.AddTeam(new TeamAlek.AlekEntityDelegate(Atlas));
             _entites.AddTeam(new NPC.VictoryComputerDelegate(Atlas));
             _entites.AddTeam(new Player.SeekerEntityDelegate(Atlas));
         }
