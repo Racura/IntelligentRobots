@@ -27,7 +27,7 @@ namespace IntelligentRobots.TeamKris
             _seekers = new List<SeekerDelegate>();
         }
 
-        public Entity WillAdded(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
+        public Entity CreateEntity(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
         {
             var rand = (int)(possibleLocations.Length * Atlas.Rand);
 
