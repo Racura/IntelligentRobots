@@ -63,13 +63,13 @@ namespace IntelligentRobots.TeamKris
         {
             foreach (var e in team.TeamMembers)
             {
-                EntityDebug.DrawFov(Atlas, e);
+                EntityDebugHelpers.DrawFov(Atlas, e);
             }
 
             Atlas.Graphics.Flush();
             foreach (var s in _seekers)
             {
-                s.DrawCurrentPath(Atlas);
+                s.DrawPath(Atlas);
             }
             Atlas.Graphics.Flush();
         }

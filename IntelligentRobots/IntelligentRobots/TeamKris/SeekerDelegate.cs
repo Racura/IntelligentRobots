@@ -16,14 +16,6 @@ namespace IntelligentRobots.TeamKris
 {
     public class SeekerDelegate
     {
-        Entity _entity;
-        KrisEntityDelegate _teamDelegate;
-
-        List<Vector2> _path;
-        int _mapVerison;
-
-        public Vector2 GoToPoint { get; protected set; }
-        public bool WantsObjective { get; protected set; }
 
         public SeekerDelegate(KrisEntityDelegate teamDelegate, Entity entity)
             : base()
@@ -62,50 +54,10 @@ namespace IntelligentRobots.TeamKris
             }
         }
 
-        private void TryFollowPath()
+
+        public void DrawPath(AtlasGlobal atlas)
         {
-            if (_path == null || _path.Count == 0)
-            {
-                _entity.TryMove(Vector2.Zero);
-                WantsObjective = true;
-                return;
-            }
-
-            if (Vector2.DistanceSquared(_path[0], _entity.Position) < 16 * 16)
-            {
-                _path.RemoveAt(0);
-            }
-
-            if (_path.Count > 0)
-            {
-                Vector2 wantedDir = (_path[0] - _entity.Position) * 1;
-
-                _entity.TryMove(wantedDir);
-                _entity.TryFace((float)(Math.Atan2(wantedDir.Y, wantedDir.X) + Math.Sin(_teamDelegate.Report.TimeStamp)));
-            }
+            EntityTypes.EntityDebugHelpers.DrawPath(atlas, _path);
         }
-
-        public void DrawCurrentPath(AtlasGlobal atlas)
-        {
-            if (_path == null || _path.Count == 2)
-            {
-                return;
-            }
-
-            VertexPositionColorTexture[] vpct = new VertexPositionColorTexture[_path.Count];
-
-
-            for (int i = 0; i < _path.Count; i++)
-            {
-                vpct[i].Position = new Vector3(_path[i], 0);
-                vpct[i].Color = AtlasColorSystem.GetColorFromHue(i * 16) * 0.5f;
-            }
-
-
-            atlas.Graphics.SetPrimitiveType(PrimitiveType.LineStrip);
-            atlas.Graphics.DrawVector(vpct);
-
-        }
-
     }
 }
