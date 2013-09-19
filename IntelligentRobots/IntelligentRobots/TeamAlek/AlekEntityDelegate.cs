@@ -256,7 +256,6 @@ namespace IntelligentRobots.TeamAlek
 
         public void Restart(EntityTeam team)
         {
-            throw new NotImplementedException();
         }
     }
 }

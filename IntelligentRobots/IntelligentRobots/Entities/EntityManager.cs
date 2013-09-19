@@ -14,23 +14,23 @@ namespace IntelligentRobots.Entities
 {
     public class EntityManager : AtlasManager
     {
-        private List<EntityTeam> _teams;
-        public List<EntityTeam> Teams { get { return _teams; } }
+        private Dictionary<string, EntityTeam> _teams;
+        public Dictionary<string, EntityTeam> Teams { get { return _teams; } }
 
         private object _key;
 
         public EntityManager(AtlasGlobal atlas)
             : base(atlas)
         {
-            _teams = new List<EntityTeam>();
+            _teams = new Dictionary<string, EntityTeam>();
 
             _key = new object();
         }
 
-        public void AddTeam(EntityDelegate teamDelegate)
+        public void AddTeam(string key, EntityDelegate teamDelegate)
         {
             var team = new EntityTeam(Atlas, teamDelegate);
-            _teams.Add(team);
+            _teams.Add(key, team);
             team.Lock(_key);
         }
 
@@ -38,36 +38,16 @@ namespace IntelligentRobots.Entities
         {
             foreach (var e in _teams)
             {
-                e.UnLock(_key);
-                e.Clear();
-                e.Lock(_key);
+                e.Value.UnLock(_key);
+                e.Value.Clear();
+                e.Value.Lock(_key);
             }
         }
 
         public void NewGame()
         {
             Clear();
-
-
-            var gm = Atlas.GetManager<Grid.GridManager>();
-
-            double tmp = Math.PI * 2 * Atlas.Rand;
-
-            int size = 200;
-
-            for (int i = 0; i < _teams.Count; i++)
-            {
-                var v = new Vector2((float)Math.Sin(i * Math.PI * 2 / _teams.Count + tmp) * 0.5f + 0.5f,
-                                    (float)Math.Cos(i * Math.PI * 2 / _teams.Count + tmp) * 0.5f + 0.5f);
-
-                var rect = new RectangleF(v.X * (gm.Trunk.Width - size), v.Y * (gm.Trunk.Height - size), size, size);
-
-                _teams[i].UnLock(_key);
-                _teams[i].Spawn(new RectangleF[] { rect });
-                _teams[i].Spawn(new RectangleF[] { rect });
-                _teams[i].Spawn(new RectangleF[] { rect });
-                _teams[i].Lock(_key);
-            }
+            
         }
 
         public override void Update(string arg)
@@ -81,9 +61,9 @@ namespace IntelligentRobots.Entities
 
             foreach (var e in _teams)
             {
-                e.UnLock(_key);
-                e.Update();
-                e.Lock(_key);
+                e.Value.UnLock(_key);
+                e.Value.Update();
+                e.Value.Lock(_key);
             }
 
             bool first = true;
@@ -93,7 +73,7 @@ namespace IntelligentRobots.Entities
 
             foreach (var team in _teams)
             {
-                foreach (var entity in team.TeamMembers)
+                foreach (var entity in team.Value.TeamMembers)
                 {
                     if (first)
                     {
@@ -124,8 +104,18 @@ namespace IntelligentRobots.Entities
         {
             foreach (var e in _teams)
             {
-                e.Draw();
+                e.Value.Draw();
             }
+        }
+
+        public void Spawn(string key, RectangleF[] rectangleF)
+        {
+            if (!_teams.ContainsKey(key))
+                return;
+
+            _teams[key].UnLock(_key);
+            _teams[key].Spawn(rectangleF);
+            _teams[key].Lock(_key);
         }
     }
 }

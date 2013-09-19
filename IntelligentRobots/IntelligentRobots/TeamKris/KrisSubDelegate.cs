@@ -15,38 +15,79 @@ namespace IntelligentRobots.TeamKris
 {
     public class KrisSubDelegate
     {
-        Entity _entity;
-        KrisEntityDelegate _teamDelegate;
+        public Entity Entity { get; private set; }
+        public KrisEntityDelegate TeamDelegate { get; private set; }
 
-        List<Vector2> _path;
-        int _mapVerison;
+        public List<Vector2> Path { get; protected set; }
+        public int MapVerison { get; protected set; }
 
         public Vector2 GoToPoint { get; protected set; }
         public bool WantsObjective { get; protected set; }
 
 
+        public KrisSubDelegate(KrisEntityDelegate teamDelegate, Entity entity)
+            : base()
+        {
+            TeamDelegate = teamDelegate;
+            Entity = entity;
+
+            WantsObjective = true;
+        }
+
+
 
         protected virtual void TryFollowPath()
         {
-            if (_path == null || _path.Count == 0)
+            if (Path != null && MapVerison != TeamDelegate.Report.Trunk.Version)
             {
-                _entity.TryMove(Vector2.Zero);
+                Path = null;
+                TrySetPath(GoToPoint, TeamDelegate.Report.Trunk);
+            }
+
+            if (Path == null || Path.Count == 0)
+            {
+                Entity.TryMove(Vector2.Zero);
                 WantsObjective = true;
                 return;
             }
 
-            if (Vector2.DistanceSquared(_path[0], _entity.Position) < 16 * 16)
+            if (Vector2.DistanceSquared(Path[0], Entity.Position) < Entity.Radius * Entity.Radius)
             {
-                _path.RemoveAt(0);
+                Path.RemoveAt(0);
             }
 
-            if (_path.Count > 0)
+            if (Path.Count > 0)
             {
-                Vector2 wantedDir = (_path[0] - _entity.Position) * 1;
-
-                _entity.TryMove(wantedDir);
-                _entity.TryFace((float)(Math.Atan2(wantedDir.Y, wantedDir.X) + Math.Sin(_teamDelegate.Report.TimeStamp)));
+                Vector2 wantedDir = (Path[0] - Entity.Position) * 160;
+                Entity.TryMove(wantedDir);
+                Entity.TryFace((float)(Math.Atan2(wantedDir.Y, wantedDir.X) + Math.Sin(TeamDelegate.Report.TimeStamp * 8) * 1f));
             }
+        }
+
+        public bool TrySetPath(Vector2 point, Grid.GridTrunk trunk)
+        {
+            GoToPoint = point;
+
+            List<Vector2> path;
+
+            if (trunk.TryFindPath(Entity.Position, point, Entity.Radius, out path)) {
+
+                path.RemoveAt(0);
+
+                Path = path;
+                MapVerison = trunk.Version;
+
+                WantsObjective = false;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public virtual void Update()
+        {
+
         }
     }
 }

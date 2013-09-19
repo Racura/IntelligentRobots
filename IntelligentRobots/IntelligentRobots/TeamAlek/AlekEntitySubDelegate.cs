@@ -33,12 +33,16 @@ namespace IntelligentRobots.TeamAlek
         private Vector2? getWinPosition(Entity entity, EntityReport report)
         {
             //var e = report.SightList[entity][0].type == typeof(VictoryComputerEntity);
-            foreach (var s in report.SightList[entity])
+            
+            if (report.SightList.ContainsKey(entity)) //fixed null 
             {
-                if (s.type == typeof(VictoryComputerEntity))
+                foreach (var s in report.SightList[entity])
                 {
+                    if (s.type == typeof(VictoryComputerEntity))
+                    {
 
-                    return s.position;
+                        return s.position;
+                    }
                 }
             }
             return null;

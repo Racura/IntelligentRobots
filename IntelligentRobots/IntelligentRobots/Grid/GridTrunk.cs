@@ -164,6 +164,10 @@ namespace IntelligentRobots.Grid
 
         public bool TryFindPath(Vector2 v1, Vector2 v2, float raduis, out List<Vector2> path)
         {
+            return TryFindPath(v1, v2, raduis, new GridObject<float>(0,0,0), out path);
+        }
+        public bool TryFindPath(Vector2 v1, Vector2 v2, float raduis, GridObject<float> weightMap, out List<Vector2> path)
+        {
             for (int i = 0; i < _width; i++)
                 for (int j = 0; j < _height; j++)
                     _visitedMap[i, j] = false;
@@ -176,7 +180,7 @@ namespace IntelligentRobots.Grid
             //int tileSize = (int)((raduis * 2 - 1) / _tileSize) + 1;
             float r = raduis / _tileSize;
             
-            int d = (int)((raduis * 2 * TwoSqrt - 1) / _tileSize) + 1;
+            //int d = (int)((raduis * 2 * TwoSqrt - 1) / _tileSize) + 1;
 
             bool success = false;
 
@@ -198,7 +202,7 @@ namespace IntelligentRobots.Grid
 
             _visitedMap[startX, startY] = true;
 
-            float offset = 0.0f;
+            float offset = 0.5f * ((int)(r * 2 + 1) % 2);
 
             while (inList.Count > 0 && !success)
             {
@@ -232,10 +236,10 @@ namespace IntelligentRobots.Grid
                                     bool diagonal = Math.Abs(i - j) != 1;
 
                                     if (!diagonal ||
-                                        CanFit(i + n.x + offset + i * 0.5f, j + n.y + offset + j * 0.5f, r))
+                                        CanFit(i * 0.5f + n.x + offset, j * 0.5f + n.y + offset, r))
                                     {
                                         var tmpNode = new GridNode(outList.Count, i + n.x, j + n.y,
-                                                n.steps + (diagonal ? TwoSqrt : 1),
+                                               n.steps + (diagonal ? TwoSqrt : 1) * weightMap.Get(i + n.x, j + n.y, 1),
                                                 GridNode.EstimateDistanceTo(i + n.x, j + n.y, goalX, goalY));
 
                                         if (!_visitedMap[i + n.x, j + n.y])
@@ -289,30 +293,16 @@ namespace IntelligentRobots.Grid
             return true;
         }
 
-        /*public bool CanFit(int x, int y, int tileSize)
-        {
-            if (x + tileSize >= _width || y + tileSize >= _height || x < 0 || y < 0)
-                return false;
-
-            for (int i = 0; i < tileSize; i++)
-                for (int j = 0; j < tileSize; j++)
-                    if (_heightMap.Get(x + i, y + j, 0) != 0)
-                        return false;
-
-
-            return true;
-        }*/
-
         public bool CanFit(float centerX, float centerY, float radius)
         {
 
             for (int y =         -(int)(radius + 1); y <= (radius + 1); y++)
                 for (int x =     -(int)(radius + 1); x <= (radius + 1); x++)
                 {
-                    float tmpX = x + (x < 0 ? 1 : 0);
-                    float tmpY = y + (y < 0 ? 1 : 0);
+                    float tmpX = MathHelper.Clamp(centerX % 1, x, x + 1) - (centerX % 1);
+                    float tmpY = MathHelper.Clamp(centerY % 1, y, y + 1) - (centerY % 1);
 
-                    if (tmpX * tmpX + tmpY * tmpY <= (radius * radius)
+                    if ((tmpX * tmpX + tmpY * tmpY <= (radius * radius))
                         && _heightMap.Get((int)(x + centerX), (int)(y + centerY), 0) != 0)
                         return false;
                 }

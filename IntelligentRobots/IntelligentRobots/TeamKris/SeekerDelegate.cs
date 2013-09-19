@@ -14,50 +14,31 @@ using AtlasEngine.BasicManagers;
 
 namespace IntelligentRobots.TeamKris
 {
-    public class SeekerDelegate
+    public class SeekerDelegate : KrisSubDelegate
     {
 
         public SeekerDelegate(KrisEntityDelegate teamDelegate, Entity entity)
-            : base()
+            : base(teamDelegate, entity)
         {
-            _teamDelegate = teamDelegate;
-            _entity = entity;
-
-            WantsObjective = true;
         }
 
-        public void Update(EntityReport report)
+        public override void Update()
         {
-            _entity.TryFace(_entity.Angle + 1);
+            Entity.TryFace(Entity.Angle + 1);
 
-            if (report.Trunk.Version != _mapVerison && _path != null)
+            if (TeamDelegate.Report.Trunk.Version != MapVerison && Path != null)
             {
-                SetPath(GoToPoint, report.Trunk);
+                TrySetPath(GoToPoint, TeamDelegate.Report.Trunk);
             }
 
             TryFollowPath();
         }
 
 
-        public void SetPath(Vector2 point, Grid.GridTrunk trunk)
-        {
-            GoToPoint = point;
-
-            List<Vector2> path;
-
-            if (trunk.TryFindPath(_entity.Position, point, _entity.Radius, out path))
-            {
-                _path = path;
-                _mapVerison = trunk.Version;
-
-                WantsObjective = false;
-            }
-        }
-
 
         public void DrawPath(AtlasGlobal atlas)
         {
-            EntityTypes.EntityDebugHelpers.DrawPath(atlas, _path);
+            EntityTypes.EntityDebugHelpers.DrawPath(atlas, Path);
         }
     }
 }

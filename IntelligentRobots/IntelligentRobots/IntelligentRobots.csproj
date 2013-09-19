@@ -78,6 +78,7 @@
     <Compile Include="Component\GameStateComponent.cs" />
     <Compile Include="Component\StateController.cs" />
     <Compile Include="Entities\EntityReport.cs" />
+    <Compile Include="EntityTypes\HunterEntity.cs" />
     <Compile Include="EntityTypes\EntityDebugHelpers.cs" />
     <Compile Include="EntityTypes\VictoryComputerEntity.cs" />
     <Compile Include="EntityTypes\SeekerEntity.cs" />
