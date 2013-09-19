@@ -92,11 +92,11 @@ namespace IntelligentRobots.Entities
 
         public Type type;
 
-        private string _id;
+        public string id;
 
         public EntityStruct(Entity e)
         {
-            _id         = e.Id;
+            id         = e.Id;
 
             type        = e.GetType();
 
@@ -113,7 +113,26 @@ namespace IntelligentRobots.Entities
 
         public bool Is(Entity e)
         {
-            return _id == e.Id;
+            return id == e.Id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is EntityStruct)
+            {
+                var s = (EntityStruct)obj;
+
+                return s.alive      == alive
+                    && s.position   == position
+                    && s.velocity   == velocity
+                    && s.type       == type
+                    && s.crouching  == crouching
+                    && s.angle      == angle
+                    && s.fov        == fov
+                    && s.radius     == radius;
+            }
+
+            return base.Equals(obj);
         }
     }
 }

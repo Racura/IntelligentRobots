@@ -42,6 +42,7 @@ namespace IntelligentRobots.Entities
 
         public EntityReport(GridTrunk trunk, float timeStamp)
         {
+            TimeStamp = timeStamp;
             Locked = false;
             _trunk = trunk;
             _sightList = new Dictionary<Entity, EntityStruct[]>();

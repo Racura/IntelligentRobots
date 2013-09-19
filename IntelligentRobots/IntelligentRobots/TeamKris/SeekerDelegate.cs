@@ -14,98 +14,31 @@ using AtlasEngine.BasicManagers;
 
 namespace IntelligentRobots.TeamKris
 {
-    public class SeekerDelegate
+    public class SeekerDelegate : KrisSubDelegate
     {
-        Entity _entity;
-        KrisEntityDelegate _teamDelegate;
-
-        List<Vector2> _path;
-        int _mapVerison;
-
-        public Vector2 GoToPoint { get; protected set; }
-        public bool WantsObjective { get; protected set; }
 
         public SeekerDelegate(KrisEntityDelegate teamDelegate, Entity entity)
-            : base()
+            : base(teamDelegate, entity)
         {
-            _teamDelegate = teamDelegate;
-            _entity = entity;
-
-            WantsObjective = true;
         }
 
-        public void Update(EntityReport report)
+        public override void Update()
         {
-            _entity.TryFace(_entity.Angle + 1);
+            Entity.TryFace(Entity.Angle + 1);
 
-            if (report.Trunk.Version != _mapVerison && _path != null)
+            if (TeamDelegate.Report.Trunk.Version != MapVerison && Path != null)
             {
-                SetPath(GoToPoint, report.Trunk);
+                TrySetPath(GoToPoint, TeamDelegate.Report.Trunk);
             }
 
             TryFollowPath();
         }
 
 
-        public void SetPath(Vector2 point, Grid.GridTrunk trunk)
+
+        public void DrawPath(AtlasGlobal atlas)
         {
-            GoToPoint = point;
-
-            List<Vector2> path;
-
-            if (trunk.TryFindPath(_entity.Position, point, _entity.Radius, out path))
-            {
-                _path = path;
-                _mapVerison = trunk.Version;
-
-                WantsObjective = false;
-            }
+            EntityTypes.EntityDebugHelpers.DrawPath(atlas, Path);
         }
-
-        private void TryFollowPath()
-        {
-            if (_path == null || _path.Count == 0)
-            {
-                _entity.TryMove(Vector2.Zero);
-                WantsObjective = true;
-                return;
-            }
-
-            if (Vector2.DistanceSquared(_path[0], _entity.Position) < 16 * 16)
-            {
-                _path.RemoveAt(0);
-            }
-
-            if (_path.Count > 0)
-            {
-                Vector2 wantedDir = (_path[0] - _entity.Position) * 1;
-
-                _entity.TryMove(wantedDir);
-                _entity.TryFace((float)(Math.Atan2(wantedDir.Y, wantedDir.X) + Math.Sin(_teamDelegate.Report.TimeStamp)));
-            }
-        }
-
-        public void DrawCurrentPath(AtlasGlobal atlas)
-        {
-            if (_path == null || _path.Count == 2)
-            {
-                return;
-            }
-
-            VertexPositionColorTexture[] vpct = new VertexPositionColorTexture[_path.Count];
-
-
-            for (int i = 0; i < _path.Count; i++)
-            {
-                vpct[i].Position = new Vector3(_path[i], 0);
-                vpct[i].Color = AtlasColorSystem.GetColorFromHue(i * 16) * 0.5f;
-            }
-
-
-            atlas.Graphics.SetPrimitiveType(PrimitiveType.LineStrip);
-            atlas.Graphics.DrawVector(vpct);
-
-        }
-
     }
 }

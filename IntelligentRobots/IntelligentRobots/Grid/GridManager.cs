@@ -19,6 +19,7 @@ namespace IntelligentRobots.Grid
         private GridTrunk _trunk;
         public GridTrunk Trunk { get { return _trunk; } }
 
+
         public GridManager(AtlasGlobal atlas)
             : base(atlas)
         {
@@ -49,7 +50,7 @@ namespace IntelligentRobots.Grid
 
             foreach (var t in teams)
             {
-                foreach (var e in t.TeamMembers)
+                foreach (var e in t.Value.TeamMembers)
                 {
                     MapCollide(e);
 
@@ -62,14 +63,13 @@ namespace IntelligentRobots.Grid
 
             if (state.State == Component.StateController.GameState.Combat)
             {
-
                 foreach (var t in teams)
                 {
-                    EntityReport report = new EntityReport(_trunk, Atlas.TotalTime);
+                    EntityReport report = new EntityReport(_trunk, state.TimePassed);
 
-                    if (t.Delegate == null) continue;
+                    if (t.Value.Delegate == null) continue;
 
-                    foreach (var e1 in t.TeamMembers)
+                    foreach (var e1 in t.Value.TeamMembers)
                     {
                         List<EntityStruct> _list = new List<EntityStruct>();
 
@@ -108,7 +108,7 @@ namespace IntelligentRobots.Grid
                         report.SightList.Add(e1, _list.ToArray());
                     }
 
-                    t.Delegate.Update(t, report);
+                    t.Value.Delegate.Update(t.Value, report);
                 }
             }
 

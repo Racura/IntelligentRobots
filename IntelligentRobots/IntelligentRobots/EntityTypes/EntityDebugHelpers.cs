@@ -13,7 +13,7 @@ using IntelligentRobots.Entities;
 
 namespace IntelligentRobots.EntityTypes
 {
-    public static class  EntityDebug
+    public static class  EntityDebugHelpers
     {
         public static void DrawFov(AtlasGlobal atlas, Entity e)
         {
@@ -30,6 +30,28 @@ namespace IntelligentRobots.EntityTypes
                 e.Position.Y + (float)Math.Sin(e.Angle - e.FOV * 0.5f) * 64, 0);
 
             atlas.Graphics.SetPrimitiveType(PrimitiveType.LineList);
+            atlas.Graphics.DrawVector(vpct);
+        }
+
+        
+        public static void DrawPath(AtlasGlobal atlas, List<Vector2> path)
+        {
+            if (path == null || path.Count == 2)
+            {
+                return;
+            }
+
+            VertexPositionColorTexture[] vpct = new VertexPositionColorTexture[path.Count];
+
+
+            for (int i = 0; i < path.Count; i++)
+            {
+                vpct[i].Position = new Vector3(path[i], 0);
+                vpct[i].Color = AtlasColorSystem.GetColorFromHue(i * 16) * 0.5f;
+            }
+
+
+            atlas.Graphics.SetPrimitiveType(PrimitiveType.LineStrip);
             atlas.Graphics.DrawVector(vpct);
         }
     }

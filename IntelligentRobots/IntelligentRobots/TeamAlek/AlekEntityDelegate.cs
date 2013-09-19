@@ -256,6 +256,7 @@ namespace IntelligentRobots.TeamAlek
 
         public void Restart(EntityTeam team)
         {
+
             subDelegates.Clear();
         }
     }

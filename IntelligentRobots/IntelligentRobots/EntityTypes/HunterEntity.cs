@@ -14,9 +14,9 @@ using IntelligentRobots.Entities;
 
 namespace IntelligentRobots.EntityTypes
 {
-    public class SeekerEntity : Entities.Entity
+    public class HunterEntity : Entities.Entity
     {
-        public const float SPEED = 108;
+        public const float SPEED = 192;
         
 
         private float _radius;
@@ -36,12 +36,12 @@ namespace IntelligentRobots.EntityTypes
 
         public override float Angle { get { return _angle; } }
 
-        public override float FOV { get { return MathHelper.Pi * 1.5f; } }
+        public override float FOV { get { return MathHelper.Pi * 0.2f; } }
 
-        public SeekerEntity(AtlasGlobal atlas, EntityTeam team, Vector2 position)
+        public HunterEntity(AtlasGlobal atlas, EntityTeam team, Vector2 position)
             : base(atlas, team)
         {
-            _radius = 7;
+            _radius = 14;
             _angle = 0;
 
             this._position = position;
@@ -66,13 +66,13 @@ namespace IntelligentRobots.EntityTypes
             while (Math.Abs(_wantedAngle - _angle) > Math.PI + 0.000001f)
                 _wantedAngle -= (float)(Math.Sign(_wantedAngle - _angle) * 2 * Math.PI);
 
-            _angle += Math.Min(Math.Abs(_wantedAngle - _angle), Atlas.Elapsed * 4) * Math.Sign(_wantedAngle - _angle);
+            _angle += Math.Min(Math.Abs(_wantedAngle - _angle), Atlas.Elapsed * 3) * Math.Sign(_wantedAngle - _angle);
 
             while (Math.Abs(_angle) > Math.PI + 0.000001f)
                 _angle = _angle - (float)(Math.Sign(_angle) * 2 * Math.PI);
                         
 
-            _velocity += (_wantedVelocity - _velocity) * (16 * Atlas.Elapsed);
+            _velocity += (_wantedVelocity - _velocity) * (8 * Atlas.Elapsed);
 
             if (Math.Abs(_velocity.X) < 0.001f && Math.Abs(_velocity.Y) < 0.001f)
             {
