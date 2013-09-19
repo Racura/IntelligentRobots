@@ -172,10 +172,10 @@ namespace IntelligentRobots.Grid
                 for (int j = 0; j < _height; j++)
                     _visitedMap[i, j] = false;
 
-            int startX = Convert.ToInt32(v1.X / _tileSize);
-            int startY = Convert.ToInt32(v1.Y / _tileSize);
-            int goalX = Convert.ToInt32(v2.X / _tileSize);
-            int goalY = Convert.ToInt32(v2.Y / _tileSize);
+            int startX =    (int)(v1.X / _tileSize);
+            int startY =    (int)(v1.Y / _tileSize);
+            int goalX =     (int)(v2.X / _tileSize);
+            int goalY =     (int)(v2.Y / _tileSize);
 
             //int tileSize = (int)((raduis * 2 - 1) / _tileSize) + 1;
             float r = raduis / _tileSize;

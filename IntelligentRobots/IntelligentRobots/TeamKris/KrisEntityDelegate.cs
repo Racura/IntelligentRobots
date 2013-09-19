@@ -34,15 +34,19 @@ namespace IntelligentRobots.TeamKris
         {
             var rand = (int)(possibleLocations.Length * Atlas.Rand);
 
-            if(team.TeamMembers.Length % 4 == 1)
-                return new HunterEntity(Atlas, team,
-                    new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand,
-                                possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand));
+            for (int i = 0; i < 16; i++ )
+            {
+                Vector2 point = new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand,
+                                            possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand);
 
+                if(trunk.CanFit(point, 16)) {
+                    if (team.TeamMembers.Length % 4 == 1)
+                        return new HunterEntity(Atlas, team, point); //spawn a hunter instead, roughly 3 seekers for every hunter
+                    return new SeekerEntity(Atlas, team, point);
+                }
+            }
 
-            return new SeekerEntity(Atlas, team,
-                new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand,
-                            possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand));
+            return null;
         }
 
         public void HasAdded(EntityTeam team, Entity entity)
