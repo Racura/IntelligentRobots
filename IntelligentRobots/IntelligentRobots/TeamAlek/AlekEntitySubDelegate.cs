@@ -137,7 +137,7 @@ namespace IntelligentRobots.TeamAlek
 
                 if (hitPoint(entity.Position, _vectorList[1], entity.Radius)) // fixed the idle problem
                 {
-                    _vectorList.RemoveAt(1);
+                    _vectorList.RemoveAt(0);
                 }
             }
             else

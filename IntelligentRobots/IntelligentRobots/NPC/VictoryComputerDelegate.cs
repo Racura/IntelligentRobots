@@ -25,10 +25,15 @@ namespace IntelligentRobots.NPC
         public Entity CreateEntity(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
         {
             var rand = (int)(possibleLocations.Length * Atlas.Rand);
+            for (int i = 0; i < 16; i++)
+            {
+                    Vector2 point = new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand,
+                                possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand);
+                    if (trunk.CanFit(point, 24))
+                    return new EntityTypes.VictoryComputerEntity(Atlas, team, point);
 
-            return new EntityTypes.VictoryComputerEntity(Atlas, team, 
-                new Vector2(possibleLocations[rand].X + possibleLocations[rand].Width * Atlas.Rand, 
-                            possibleLocations[rand].Y + possibleLocations[rand].Height * Atlas.Rand));
+            }
+            return null;
         }
 
         public void HasAdded(EntityTeam team, Entity enitity)
