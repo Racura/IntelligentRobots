@@ -24,6 +24,8 @@ namespace IntelligentRobots.TeamAlek
 
         Entity entity;
 
+
+
         public AlekEntitySubDelegate(AtlasGlobal atlas, Entity e)
             : base(atlas)
         {
@@ -103,7 +105,7 @@ namespace IntelligentRobots.TeamAlek
             //entity.TryCrouching((report.SightList.Count > 0));
             Vector2? destination = getWinPosition(entity, report);
 
-            if (destination.HasValue)
+            if (destination.HasValue && !panic)
             {
                 pathToSpecificPoint(entity, report, destination.Value);
                 panic = true;
@@ -173,6 +175,11 @@ namespace IntelligentRobots.TeamAlek
 
                 }
             }
+        }
+
+        public void debugDraw()
+        {
+            EntityDebugHelpers.DrawPath(Atlas, _vectorList);
         }
     }
 }

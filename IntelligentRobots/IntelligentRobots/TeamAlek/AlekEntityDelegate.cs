@@ -244,7 +244,10 @@ namespace IntelligentRobots.TeamAlek
 
         public void DebugDraw(EntityTeam team)
         {
-
+            foreach (var v in subDelegates)
+            {
+                v.debugDraw();
+            }
         }
 
         public bool Swappable(EntityTeam team, EntityDelegate entityDelegate)

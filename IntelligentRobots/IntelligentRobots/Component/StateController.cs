@@ -119,7 +119,7 @@ namespace IntelligentRobots.Component
                     goto default;
                 default:
                     double tmp = Math.PI * 2 * Atlas.Rand;
-                    var str = new string[] { "Kris", "Aleks1", "Victory" };
+                    var str = new string[] { "Kris", "Aleks", "Victory" };
 
                     for (int i = 0; i < str.Length; ++i)
                     {
