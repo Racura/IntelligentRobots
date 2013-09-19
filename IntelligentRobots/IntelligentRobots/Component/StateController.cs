@@ -109,6 +109,18 @@ namespace IntelligentRobots.Component
 
             switch (keys)
             {
+                case Keys.R:
+                    float w = gm.Trunk.Width * 0.33f;
+                    float h = gm.Trunk.Height * 0.33f;
+                    
+                    for (int j = 0; j < 4; ++j )
+                        em.Spawn("Kris", new RectangleF[] { new RectangleF(w * 1, h * 2, w, h ) });
+                    for (int j = 0; j < 3; ++j )
+                        em.Spawn("Aleks", new RectangleF[] { new RectangleF(w * 0, h * 0, w, h ) });
+                    for (int j = 0; j < 2; ++j )
+                        em.Spawn("Victory", new RectangleF[] { new RectangleF(w * 2, h * 1, w, h ) });
+
+                    break;
                 case Keys.E:
                     count = 1;
                     size = 1;
