@@ -172,10 +172,10 @@ namespace IntelligentRobots.Grid
                 for (int j = 0; j < _height; j++)
                     _visitedMap[i, j] = false;
 
-            int startX = (int)((v1.X - raduis * 0.99f) / _tileSize);
-            int startY = (int)((v1.Y - raduis * 0.99f) / _tileSize);
-            int goalX = (int)((v2.X - raduis * 0.99f) / _tileSize);
-            int goalY = (int)((v2.Y - raduis * 0.99f) / _tileSize);
+            int startX = Convert.ToInt32(v1.X / _tileSize);
+            int startY = Convert.ToInt32(v1.Y / _tileSize);
+            int goalX = Convert.ToInt32(v2.X / _tileSize);
+            int goalY = Convert.ToInt32(v2.Y / _tileSize);
 
             //int tileSize = (int)((raduis * 2 - 1) / _tileSize) + 1;
             float r = raduis / _tileSize;
@@ -231,12 +231,12 @@ namespace IntelligentRobots.Grid
                         {
                             if (i + n.x >= 0 && i + n.x < _width && j + n.y >= 0 && j + n.y < _height)
                             {
-                                if (CanFit(i + n.x + offset, j + n.y + offset, r))
+                                if (_canFit(i + n.x + offset, j + n.y + offset, r))
                                 {
                                     bool diagonal = Math.Abs(i - j) != 1;
 
                                     if (!diagonal ||
-                                        CanFit(i * 0.5f + n.x + offset, j * 0.5f + n.y + offset, r))
+                                        _canFit(i * 0.5f + n.x + offset, j * 0.5f + n.y + offset, r))
                                     {
                                         var tmpNode = new GridNode(outList.Count, i + n.x, j + n.y,
                                                n.steps + (diagonal ? TwoSqrt : 1) * weightMap.Get(i + n.x, j + n.y, 1),
@@ -293,11 +293,11 @@ namespace IntelligentRobots.Grid
             return true;
         }
 
-        public bool CanFit(float centerX, float centerY, float radius)
+        private bool _canFit(float centerX, float centerY, float radius)
         {
 
-            for (int y =         -(int)(radius + 1); y <= (radius + 1); y++)
-                for (int x =     -(int)(radius + 1); x <= (radius + 1); x++)
+            for (int y = -(int)(radius + 1); y <= (radius + 1); y++)
+                for (int x = -(int)(radius + 1); x <= (radius + 1); x++)
                 {
                     float tmpX = MathHelper.Clamp(centerX % 1, x, x + 1) - (centerX % 1);
                     float tmpY = MathHelper.Clamp(centerY % 1, y, y + 1) - (centerY % 1);
@@ -308,6 +308,11 @@ namespace IntelligentRobots.Grid
                 }
 
             return true;
+        }
+
+        public bool CanFit(Vector2 position, float radius)
+        {
+            return _canFit(position.X / _tileSize, position.Y / _tileSize, radius / _tileSize);
         }
 
         #endregion

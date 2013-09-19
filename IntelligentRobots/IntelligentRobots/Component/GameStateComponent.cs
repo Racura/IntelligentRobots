@@ -70,17 +70,6 @@ namespace IntelligentRobots.Component
 
         public override void PostDraw()
         {
-            if (Atlas.Debug)
-            {
-                const float r = 14;
-                Vector2 p = _camera.GetWorldPosition(Atlas.Input.GetTouchCollection()[0].Position, Vector2.One);
-
-                Atlas.Graphics.DrawSprite(Atlas.Content.GetContent<Texture2D>("image/simple"),
-                    p, null,
-                    _grid.Trunk.CanFit(p.X/_grid.Trunk.Size, p.Y/_grid.Trunk.Size, r/_grid.Trunk.Size) ? Color.White : Color.Red,
-                    Vector2.One * 16,
-                    0, r / 16);
-            }
 
             Atlas.Graphics.SetMatrixHandler(null);
 
