@@ -84,10 +84,11 @@
     <Compile Include="EntityTypes\SeekerEntity.cs" />
     <Compile Include="NPC\VictoryComputerDelegate.cs" />
     <Compile Include="TeamAlek\AlekEntitySubDelegate.cs" />
+    <Compile Include="TeamKris\HunterAgent.cs" />
     <Compile Include="TeamKris\FactSheet.cs" />
-    <Compile Include="TeamKris\KrisSubDelegate.cs" />
+    <Compile Include="TeamKris\EntityAgent.cs" />
     <Compile Include="TeamKris\Order.cs" />
-    <Compile Include="TeamKris\SeekerDelegate.cs" />
+    <Compile Include="TeamKris\SeekerAgent.cs" />
     <Compile Include="TeamKris\KrisEntityDelegate.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\EntityDelegate.cs" />

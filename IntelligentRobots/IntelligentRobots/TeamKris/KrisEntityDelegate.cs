@@ -18,8 +18,8 @@ namespace IntelligentRobots.TeamKris
 {
     public class KrisEntityDelegate : AtlasEntity, EntityDelegate
     {
-        public List<SeekerDelegate> _seekers;
-        public List<KrisSubDelegate> _subs;
+        public List<SeekerAgent> _seekers;
+        public List<EntityAgent> _subs;
         public float Rand
         {
             get
@@ -35,8 +35,8 @@ namespace IntelligentRobots.TeamKris
         public KrisEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
         {
-            _subs = new List<KrisSubDelegate>();
-            _seekers = new List<SeekerDelegate>();
+            _subs = new List<EntityAgent>();
+            _seekers = new List<SeekerAgent>();
         }
 
         public Entity CreateEntity(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
@@ -60,12 +60,18 @@ namespace IntelligentRobots.TeamKris
 
         public void HasAdded(EntityTeam team, Entity entity)
         {
-            KrisSubDelegate sub = null;
+            EntityAgent sub = null;
 
             if (entity is SeekerEntity)
             {
-                sub = new SeekerDelegate(this, entity);
-                _seekers.Add(sub as SeekerDelegate);
+                sub = new SeekerAgent(this, entity);
+                _seekers.Add(sub as SeekerAgent);
+            }
+            else if (entity is HunterEntity)
+            {
+
+                sub = new HunterAgent(this, entity);
+                //_seekers.Add(sub as HunterAgent);
             }
 
             if (sub != null)
@@ -108,13 +114,13 @@ namespace IntelligentRobots.TeamKris
         public bool AskTeam(DelegateOrder order)
         {
             float bid = 0;
-            KrisSubDelegate d = null;
+            EntityAgent d = null;
 
             foreach (var e in _subs)
             {
                 float tmp = 0;
 
-                if(e.Order.IsDuplicate(order))
+                if (e.Order != null && e.Order.IsDuplicate(order))
                 {
                     return false;
                 }

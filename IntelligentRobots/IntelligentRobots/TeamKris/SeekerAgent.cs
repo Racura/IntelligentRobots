@@ -14,13 +14,13 @@ using AtlasEngine.BasicManagers;
 
 namespace IntelligentRobots.TeamKris
 {
-    public class SeekerDelegate : KrisSubDelegate
+    public class SeekerAgent : EntityAgent
     {
         public float CurrentJobCost { get; protected set; }
 
         public bool _dirty;
 
-        public SeekerDelegate(KrisEntityDelegate teamDelegate, Entity entity)
+        public SeekerAgent(KrisEntityDelegate teamDelegate, Entity entity)
             : base(teamDelegate, entity)
         {
         }
@@ -54,6 +54,7 @@ namespace IntelligentRobots.TeamKris
                 {
                     case EntityStatus.Enemy:
                         TeamDelegate.AskTeam(new DelegateOrder(OrderType.Follow, e));
+                        TeamDelegate.AskTeam(new DelegateOrder(OrderType.Attack, e));
                         break;
                     case EntityStatus.Goal:
                         break;
@@ -63,11 +64,11 @@ namespace IntelligentRobots.TeamKris
 
         private void MoveToRandom()
         {
-            CurrentJobCost = 0;
 
             SetOrder(new DelegateOrder(OrderType.Move,
                 new Vector2(TeamDelegate.Rand * TeamDelegate.Report.Trunk.Width, TeamDelegate.Rand * TeamDelegate.Report.Trunk.Height)));//LITTLE bit of random
 
+            CurrentJobCost = 0;
         }
 
         private void SearchLogic()
@@ -96,8 +97,14 @@ namespace IntelligentRobots.TeamKris
         {
             Order.Target = TeamDelegate.FactSheet.GetLastSighting(Order.TargetAsEntity);
 
-            if (_dirty || Vector2.DistanceSquared(Order.TargetAsEntity.position, GoToPoint) > 16 * 16)
+            float time = TeamDelegate.Report.TimeStamp - TeamDelegate.FactSheet.GetLastSightingTime(Order.TargetAsEntity);
+
+            if (_dirty || Vector2.DistanceSquared(Order.TargetAsEntity.position + Order.TargetAsEntity.velocity * time, GoToPoint) > 16 * 16)
+            {
                 TrySetPath(Order.TargetAsEntity.position, TeamDelegate.Report.Trunk);
+
+                CurrentJobCost = Order.DistanceToTargetSquared(Entity.Position) * 2;
+            }
 
             if (Path != null)
             {
@@ -107,7 +114,7 @@ namespace IntelligentRobots.TeamKris
             //if path is invalid or at last seen point, and it's been more than 6 seconds since last seen
             if (Path == null
                 || (Vector2.DistanceSquared(Order.TargetAsEntity.position, Entity.Position) < 32 * 32)
-                && TeamDelegate.Report.TimeStamp - TeamDelegate.FactSheet.GetLastSightingTime(Order.TargetAsEntity) > 6)
+                && time > 6)
                 MoveToRandom();
         }
 
@@ -126,6 +133,8 @@ namespace IntelligentRobots.TeamKris
 
             Path = null;
             _dirty = true;
+
+            CurrentJobCost = float.MaxValue;
         }
 
         public override bool TryOrder(DelegateOrder order, out float cost)

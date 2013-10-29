@@ -51,6 +51,8 @@ namespace IntelligentRobots.Component
             protected set;
         }
 
+        private bool _started;
+
         public StateController(AtlasGlobal atlas)
             : base(atlas)
         {
@@ -58,10 +60,17 @@ namespace IntelligentRobots.Component
             this.Perpective = PerpectiveState.World;
 
             PerpectiveNumber = 0;
+
+            _started = false;
         }
 
         public override void Update(string arg)
         {
+            if (!_started) {
+                Restart();
+                _started = true;
+            }
+
             base.Update(arg);
 
             TimePassed += Atlas.Elapsed;
@@ -71,13 +80,9 @@ namespace IntelligentRobots.Component
                 State = State == GameState.Combat ? GameState.Paused : GameState.Combat;
             }
 
-            foreach (var key in new Keys[] { Keys.Q, Keys.W, Keys.E, Keys.R, Keys.T, Keys.Y, Keys.U })
+            if (Atlas.Input.IsKeyJustReleased(Keys.R))
             {
-
-                if (Atlas.Input.IsKeyJustReleased(key))
-                {
-                    Restart(key);
-                }
+                Restart();
             }
 
 
@@ -95,7 +100,7 @@ namespace IntelligentRobots.Component
                 PerpectiveNumber--;
         }
 
-        private void Restart(Keys keys)
+        private void Restart()
         {
             State = GameState.Paused;
             TimePassed = 0;
@@ -104,47 +109,16 @@ namespace IntelligentRobots.Component
             var gm = Atlas.GetManager<Grid.GridManager>();
             em.NewGame();
 
-            int count = 2;
-            int size = 64;
-
-            switch (keys)
-            {
-                case Keys.R:
-                    float w = gm.Trunk.Width * 0.33f;
-                    float h = gm.Trunk.Height * 0.33f;
+            float w = gm.Trunk.Width * 0.33f;
+            float h = gm.Trunk.Height * 0.33f;
                     
-                    for (int j = 0; j < 4; ++j )
-                        em.Spawn("Kris", new RectangleF[] { new RectangleF(w * 1, h * 2, w, h ) });
-                    for (int j = 0; j < 3; ++j )
-                        em.Spawn("Aleks", new RectangleF[] { new RectangleF(w * 0, h * 0, w, h ) });
-                    for (int j = 0; j < 2; ++j )
-                        em.Spawn("Victory", new RectangleF[] { new RectangleF(w * 2, h * 1, w, h ) });
+            for (int j = 0; j < 4; ++j )
+                em.Spawn("Kris", new RectangleF[] { new RectangleF(w * 1, h * 2, w, h ) });
+            for (int j = 0; j < 3; ++j )
+                em.Spawn("Aleks", new RectangleF[] { new RectangleF(w * 0, h * 0, w, h ) });
+            for (int j = 0; j < 1; ++j )
+                em.Spawn("Victory", new RectangleF[] { new RectangleF(w * 2, h * 1, w, h ) });
 
-                    break;
-                case Keys.E:
-                    count = 1;
-                    size = 1;
-                    goto default;
-                case Keys.W:
-                    count = 8;
-                    size = 200;
-                    goto default;
-                default:
-                    double tmp = Math.PI * 2 * Atlas.Rand;
-                    var str = new string[] { "Kris", "Aleks", "Victory" };
-
-                    for (int i = 0; i < str.Length; ++i)
-                    {
-                        var v = new Vector2((float)Math.Sin(i * Math.PI * 2 / str.Length + tmp) * 0.5f + 0.5f,
-                                            (float)Math.Cos(i * Math.PI * 2 / str.Length + tmp) * 0.5f + 0.5f);
-
-                        var rect = new RectangleF(v.X * (gm.Trunk.Width - size), v.Y * (gm.Trunk.Height - size), size, size);
-
-                        for (int j = 0; j < count; ++j )
-                            em.Spawn(str[i], new RectangleF[] { rect });
-                    }
-                    break;
-            }
         }
 
         public override string ToString()

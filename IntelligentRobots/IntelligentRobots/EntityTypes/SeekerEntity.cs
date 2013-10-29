@@ -32,7 +32,7 @@ namespace IntelligentRobots.EntityTypes
         public override bool Crouching { get { return true; } }
         public override float Radius { get { return _radius; } }
         public override Vector2 Position { get { return _position; } }
-        public override Vector2 Velocity { get { return _velocity; } }
+        public override Vector2 Velocity { get { return _velocity * SPEED; } }
 
         public override float Angle { get { return _angle; } }
 
@@ -70,9 +70,11 @@ namespace IntelligentRobots.EntityTypes
 
             while (Math.Abs(_angle) > Math.PI + 0.000001f)
                 _angle = _angle - (float)(Math.Sign(_angle) * 2 * Math.PI);
-                        
 
-            _velocity += (_wantedVelocity - _velocity) * (16 * Atlas.Elapsed);
+
+            float spec = (float)(1 - RadianDifference((float)Math.Atan2(_velocity.Y, _velocity.X), _angle) / Math.PI) * 0.5f;
+
+            _velocity += (_wantedVelocity * (0.5f + spec) - _velocity) * (16 * Atlas.Elapsed);
 
             if (Math.Abs(_velocity.X) < 0.001f && Math.Abs(_velocity.Y) < 0.001f)
             {
@@ -80,8 +82,7 @@ namespace IntelligentRobots.EntityTypes
             }
             else
             {
-                float spec = (float)(1 - RadianDifference((float)Math.Atan2(_velocity.Y, _velocity.X), _angle) / Math.PI) * 0.5f;
-                _position += _velocity * (SPEED * Atlas.Elapsed * (0.5f + spec));
+                _position += _velocity * (SPEED * Atlas.Elapsed);
             }
         }
 

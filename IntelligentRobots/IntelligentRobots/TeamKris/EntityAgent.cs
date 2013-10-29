@@ -13,7 +13,11 @@ using AtlasEngine;
 
 namespace IntelligentRobots.TeamKris
 {
-    public class KrisSubDelegate
+
+    /// <summary>
+    /// This class is the base class for all of the entity agents
+    /// </summary>
+    public class EntityAgent
     {
 
         public DelegateOrder Order { get; private set; }
@@ -27,7 +31,7 @@ namespace IntelligentRobots.TeamKris
         public bool WantsObjective { get; protected set; }
 
 
-        public KrisSubDelegate(KrisEntityDelegate teamDelegate, Entity entity)
+        public EntityAgent(KrisEntityDelegate teamDelegate, Entity entity)
             : base()
         {
             TeamDelegate = teamDelegate;
