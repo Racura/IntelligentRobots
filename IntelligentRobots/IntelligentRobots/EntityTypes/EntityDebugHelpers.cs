@@ -47,7 +47,7 @@ namespace IntelligentRobots.EntityTypes
             for (int i = 0; i < path.Count; i++)
             {
                 vpct[i].Position = new Vector3(path[i], 0);
-                vpct[i].Color = AtlasColorSystem.GetColorFromHue(i * 16) * 0.5f;
+                vpct[i].Color = AtlasColorSystem.RGBFromHSL(i * 16, 0.2f, 0.2f) * 0.5f;
             }
 
 

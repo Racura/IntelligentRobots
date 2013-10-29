@@ -15,6 +15,8 @@ namespace IntelligentRobots.TeamKris
 {
     public class KrisSubDelegate
     {
+
+        public DelegateOrder Order { get; private set; }
         public Entity Entity { get; private set; }
         public KrisEntityDelegate TeamDelegate { get; private set; }
 
@@ -36,7 +38,7 @@ namespace IntelligentRobots.TeamKris
 
 
 
-        protected virtual void TryFollowPath()
+        protected virtual void FollowPath()
         {
             if (Path != null && MapVerison != TeamDelegate.Report.Trunk.Version)
             {
@@ -85,7 +87,24 @@ namespace IntelligentRobots.TeamKris
             return false;
         }
 
+        public virtual bool TryOrder(DelegateOrder order, out float cost)
+        {
+            cost = 0;
+            return false;
+        }
+
+        public virtual void SetOrder(DelegateOrder order)
+        {
+            Order = order;
+        }
+
+
         public virtual void Update()
+        {
+
+        }
+
+        public virtual void Draw(AtlasGlobal atlas)
         {
 
         }

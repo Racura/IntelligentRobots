@@ -26,22 +26,8 @@ namespace IntelligentRobots.TeamKris
 
             foreach (var sight in report.SightList)
             {
-                foreach (var entity in sight.Value)
-                {
-                    bool found = false;
-
-                    for (int i = 0; i < list.Count; i++)
-                    {
-                        if (entity.Equals(list[i]))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found)
-                        list.Add(entity);
-                }
+                for (int i = 0; i < sight.Value.Length; ++i )
+                    CompareEntities(sight.Value[i], report.TimeStamp);
             }
         }
 
@@ -58,10 +44,38 @@ namespace IntelligentRobots.TeamKris
                 }
             }
 
-            entities.Add( new SightEntity () {
+            entities.Add(new SightEntity()
+            {
                 lastSeen = timestamp,
                 entity = entity
             });
+        }
+
+        public EntityStruct GetLastSighting(EntityStruct entity)
+        {
+            foreach (var e in entities)
+            {
+                if (e.entity.id == entity.id)
+                {
+                    return e.entity;
+                }
+            }
+
+            return entity;
+        }
+
+        public float GetLastSightingTime(EntityStruct entity)
+        {
+            foreach (var e in entities)
+            {
+                if (e.entity.id == entity.id)
+                {
+
+                    return e.lastSeen;
+                }
+            }
+
+            return 0;
         }
 
 
@@ -69,17 +83,15 @@ namespace IntelligentRobots.TeamKris
         {
             public EntityStruct entity;
             public float lastSeen;
-
-
         }
 
 
+    }
 
-        public enum EntityType
-        {
-            Hostile,
-            Ally,
-            Goal
-        }
+    public enum EntityStatus
+    {
+        Enemy,
+        Ally,
+        Goal
     }
 }

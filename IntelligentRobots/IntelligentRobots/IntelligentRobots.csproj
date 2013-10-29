@@ -86,6 +86,7 @@
     <Compile Include="TeamAlek\AlekEntitySubDelegate.cs" />
     <Compile Include="TeamKris\FactSheet.cs" />
     <Compile Include="TeamKris\KrisSubDelegate.cs" />
+    <Compile Include="TeamKris\Order.cs" />
     <Compile Include="TeamKris\SeekerDelegate.cs" />
     <Compile Include="TeamKris\KrisEntityDelegate.cs" />
     <Compile Include="Entities\Entity.cs" />

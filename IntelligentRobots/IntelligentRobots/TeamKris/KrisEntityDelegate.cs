@@ -19,6 +19,14 @@ namespace IntelligentRobots.TeamKris
     public class KrisEntityDelegate : AtlasEntity, EntityDelegate
     {
         public List<SeekerDelegate> _seekers;
+        public List<KrisSubDelegate> _subs;
+        public float Rand
+        {
+            get
+            {
+                return Atlas.Rand;
+            }
+        }
 
         public EntityReport Report { get; protected set; }
         public EntityTeam Team { get; protected set; }
@@ -27,6 +35,7 @@ namespace IntelligentRobots.TeamKris
         public KrisEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
         {
+            _subs = new List<KrisSubDelegate>();
             _seekers = new List<SeekerDelegate>();
         }
 
@@ -51,9 +60,16 @@ namespace IntelligentRobots.TeamKris
 
         public void HasAdded(EntityTeam team, Entity entity)
         {
-            _seekers.Add(new SeekerDelegate(this, entity));
-            if (entity is SeekerEntity) {
-            } 
+            KrisSubDelegate sub = null;
+
+            if (entity is SeekerEntity)
+            {
+                sub = new SeekerDelegate(this, entity);
+                _seekers.Add(sub as SeekerDelegate);
+            }
+
+            if (sub != null)
+                _subs.Add(sub);
         }
 
         public void Update(EntityTeam team, EntityReport report)
@@ -61,13 +77,10 @@ namespace IntelligentRobots.TeamKris
             Team = team;
             Report = report;
 
-            foreach (var s in _seekers)
-            {
-                if (s.WantsObjective)
-                {
-                    s.TrySetPath(new Vector2(report.Trunk.Width * Atlas.Rand, report.Trunk.Height * Atlas.Rand), report.Trunk);
-                }
+            FactSheet.UpdateFactSheet(report);
 
+            foreach (var s in _subs)
+            {
                 s.Update();
             }
         }
@@ -80,9 +93,9 @@ namespace IntelligentRobots.TeamKris
             }
 
             Atlas.Graphics.Flush();
-            foreach (var s in _seekers)
+            foreach (var s in _subs)
             {
-                s.DrawPath(Atlas);
+                s.Draw(Atlas);
             }
             Atlas.Graphics.Flush();
         }
@@ -92,11 +105,59 @@ namespace IntelligentRobots.TeamKris
             return true;
         }
 
+        public bool AskTeam(DelegateOrder order)
+        {
+            float bid = 0;
+            KrisSubDelegate d = null;
+
+            foreach (var e in _subs)
+            {
+                float tmp = 0;
+
+                if(e.Order.IsDuplicate(order))
+                {
+                    return false;
+                }
+
+                if (e.TryOrder(order, out tmp))
+                {
+                    if (d == null || tmp < bid)
+                    {
+                        d = e;
+                        bid = tmp;
+                    }
+                }
+            }
+
+            if (d != null)
+            {
+                d.SetOrder(order);
+                return true;
+            }
+
+            return false;
+        }
+
+
+
 
         public void Restart(EntityTeam team)
         {
+            _subs.Clear();
             _seekers.Clear();
             FactSheet = new FactSheet(this);
+        }
+
+
+        public EntityStatus GetEntityStatus(EntityStruct entity)
+        {
+            if (Team.OnTeam(entity))
+                return EntityStatus.Ally;
+
+            if (entity.type == typeof(VictoryComputerEntity))
+                return EntityStatus.Goal;
+
+            return EntityStatus.Enemy;
         }
 
     }

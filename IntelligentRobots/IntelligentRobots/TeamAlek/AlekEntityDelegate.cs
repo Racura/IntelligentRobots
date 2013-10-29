@@ -234,7 +234,7 @@ namespace IntelligentRobots.TeamAlek
 
         public void Update(EntityTeam entityTeam, EntityReport report)
         {
-            entityTeam.Color = AtlasColorSystem.GetColorFromHue(Atlas.TotalTime * 360); ;
+            entityTeam.Color = Color.PeachPuff;
             if (entityTeam.TeamMembers.Length == 0) return;
 
 
