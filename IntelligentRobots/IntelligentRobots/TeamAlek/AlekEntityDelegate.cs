@@ -1,180 +1,4 @@
-﻿/*
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Graphics;
-
-using IntelligentRobots.Entities;
-
-using AtlasEngine;
-using AtlasEngine.BasicManagers;
-
-namespace IntelligentRobots.TeamAlek
-{
-    
-    public class AlekEntityDelegate : AtlasEntity, EntityDelegate
-    {
-        List<Vector2> _vectorList;
-        int _version;
-        Vector2 _destination;
-        float timer;
-        Vector2 _direction;
-        
-
-        public AlekEntityDelegate(AtlasGlobal atlas)
-            : base(atlas)
-        {
-            _version = -1;
-        }
-
-       
-
-        public float getFloatAngle(Vector2 vector)
-        {
-            if (vector != null && (vector.X != 0 || vector.Y != 0))
-                return (float)Math.Atan2(vector.Y, vector.X);
-            else return 0;
-        }
-
-
-        public void Update(Entity entity, EntityReport report)
-        {
-            entity.TryCrouching((report.ListEntity.Length > 0));
-           
-        
-            if (_vectorList == null || _vectorList.Count < 2)
-            {
-                if (report.Trunk.TryFindPath(entity.Position, new Vector2(report.Trunk.Width * Atlas.Rand, report.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
-                {
-                    _version = report.Trunk.Version;
-                }
-            }
-            else if (_version != report.Trunk.Version)
-            {
-                if (!pathToSamePoint(entity, report))
-                {
-                    pathToRandomPoint(entity, report);
-                }
-            }
-            
-           
-
-
-            if (_vectorList != null && _vectorList.Count > 1)
-            {
-                _direction = _vectorList[1] - entity.Position;
-                entity.TryMove(_direction);
-                
-                if (hitPoint(entity.Position, _vectorList[1], entity.Radius)) // fixed the idle problem
-                {
-                    _vectorList.RemoveAt(1);
-                }
-            }
-            else
-            {
-                entity.TryMove(Vector2.Zero);
-                
-
-            }
-
-            timer += Atlas.Elapsed;
-            if (timer > 2f)
-            {
-                float angle = entity.Angle + 2;
-                entity.TryFace(angle);
-            }
-            else
-            {
-                entity.TryFace(getFloatAngle(_direction));
-            }
-            if (timer > 3.0f)
-            {
-                timer = 0;
-                
-            }
-            
-        }
-
-        private bool pathToSamePoint(Entity entity, EntityReport report)
-        {
-
-            if (report.Trunk.TryFindPath(entity.Position, _vectorList[_vectorList.Count - 1], entity.Radius, out _vectorList))
-            {
-                _version = report.Trunk.Version;
-                return true;
-            }
-            return false;
-        }
-
-        private void pathToRandomPoint(Entity entity, EntityReport report)
-        {
-            if (_vectorList == null || _vectorList.Count < 2)
-            {
-                if (report.Trunk.TryFindPath(entity.Position, new Vector2(report.Trunk.Width * Atlas.Rand, report.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
-                {
-                    _version = report.Trunk.Version;
-                }
-            }
-        }
-
-        public void Update2(Entity entity, EntityReport report)
-        {
-            if (_vectorList == null || _vectorList.Count == 0)
-            {
-                if (report.Trunk.TryFindPath(entity.Position, new Vector2(report.Trunk.Width * Atlas.Rand, report.Trunk.Height * Atlas.Rand), entity.Radius, out _vectorList))
-                {
-                    _version = report.Trunk.Version;
-                }
-            }
-            else if (_version != report.Trunk.Version)
-            {
-                _vectorList = null;
-            }
-
-
-            if (_vectorList != null && _vectorList.Count != 0)
-            {
-                entity.TryMove(_vectorList[0] - entity.Position);
-                if(hitPoint(entity.Position, _vectorList[0], entity.Radius))
-                {
-                    _vectorList.RemoveAt(0);
-                }
-            }
-            else
-            {
-                entity.TryMove(Vector2.Zero);
-            }
-        }
-
-      
-        //check if we hit the point
-        private bool hitPoint(Vector2 v1, Vector2 v2, float radius)
-        {
-            if (Vector2.Distance(v1, v2) < (radius))
-            {
-                return true;
-            }
-
-            return false;
-        }
-        public void DebugDraw(Entity entity)
-        {
-        }
-
-        public bool Swappable(Entity entity, EntityDelegate entityDelegate)
-        {
-            return true;
-        }
-    }
-     
-}*/
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -195,12 +19,63 @@ namespace IntelligentRobots.TeamAlek
     public class AlekEntityDelegate : AtlasEntity, EntityDelegate
     {
 
+        const int WORLD_SPLITS = 16;
         LinkedList<AlekEntitySubDelegate> subDelegates = new LinkedList<AlekEntitySubDelegate>();
-        
+        List<List<byte>> exploredInfo;//exploredInfo : 0 not explored, 1 explored
+        int[] yCount = new int[WORLD_SPLITS];
+        bool exploredEverywhere = false;
+
+        public Vector2? winPoint = null;
+
+        float ratioX;// = report.Trunk.Width / WORLD_SPLITS;
+        float ratioY;// = report.Trunk.Height / WORLD_SPLITS;
+
 
         public AlekEntityDelegate(AtlasGlobal atlas)
             : base(atlas)
         {
+            initExplored();
+        }
+
+        private void initExplored()
+        {
+            
+            exploredInfo = new List<List<byte>>();
+            for (int x = 0; x < WORLD_SPLITS; x++)
+            {
+                exploredInfo.Add(new List<byte>());
+                yCount[x] = WORLD_SPLITS;
+                for (int y = 0; y < WORLD_SPLITS; y++)
+                {
+                    exploredInfo[x].Add(0);
+
+                }
+            }
+        }
+
+        public void exploreTile (Entity entity, EntityReport report)
+        {
+            float ratioX = report.Trunk.Width / WORLD_SPLITS;
+            float ratioY = report.Trunk.Height / WORLD_SPLITS;
+
+            int exploredX = (int)(entity.Position.X / ratioX);
+            int exploredY = (int)(entity.Position.Y / ratioY);
+
+            if (exploredInfo[exploredX][exploredY] == 0)
+            {
+                exploredInfo[exploredX][exploredY] = 1;
+                yCount[exploredX]--;
+            }
+            
+        }
+
+        private Vector2 getTilePosition(int x, int y)
+        {
+            if (x > 0 && x < WORLD_SPLITS && y > 0 && y < WORLD_SPLITS)
+            {
+                return new Vector2(x * ratioX + ratioX/2, y * ratioY + ratioY/2);
+            }
+            return new Vector2(-1);
         }
 
         public Entity CreateEntity(EntityTeam team, RectangleF[] possibleLocations, Grid.GridTrunk trunk)
@@ -220,11 +95,91 @@ namespace IntelligentRobots.TeamAlek
             return null;
         }
 
+        public Vector2 whereShouldIGo(Entity entity)
+        {
+            if (exploredEverywhere)
+            {
+                return new Vector2(-1);
+            }
+            int x = (int)(Atlas.Rand * WORLD_SPLITS);
+            x = findTileOnXAxis(x);
+
+            if (x == -1)
+            {
+                exploredEverywhere = true;
+            }
+            int y = (int)(Atlas.Rand * WORLD_SPLITS);
+            return findTileOnYAxis(x, y);
+
+            //return new Vector2(-1);
+
+        }
+
+        private int findTileOnXAxis(int x)
+        {
+            bool found = false;
+            int start = x;
+            while (!found)
+            {
+                if (yCount[x] > 0)
+                {
+                    return x;
+                }
+                else
+                {
+                    x++;
+                    if (x > WORLD_SPLITS)
+                    {
+                        x = 0;
+                    }
+
+                    if (x == start)
+                    {
+
+                        found = false;
+                    }
+
+                }
+            }
+            return -1;
+
+        }
+
+        private Vector2 findTileOnYAxis(int x, int y)
+        {
+            bool found = false;
+            int start = y;
+            while(!found)
+            {
+                if (exploredInfo[x][y] == 0)
+                {
+                    return getTilePosition(x, y);
+                }
+                else
+                {
+                    y++;
+                    if (y > WORLD_SPLITS)
+                    {
+                        y = 0;
+                    }
+
+                    if (y == start)
+                    {
+
+                        found = false;
+                    }
+                        
+                }
+            }
+            return new Vector2(-1);
+            
+        }
+
         public void HasAdded(EntityTeam team, Entity entity)
         {
             if (entity is HumanEntity)
             {
-                subDelegates.AddLast(new AlekEntitySubDelegate(Atlas, entity));
+                subDelegates.AddLast(new AlekEntitySubDelegate(Atlas, entity, this));
                 
             }
         }
@@ -234,6 +189,9 @@ namespace IntelligentRobots.TeamAlek
 
         public void Update(EntityTeam entityTeam, EntityReport report)
         {
+            ratioX = report.Trunk.Width / WORLD_SPLITS;
+            ratioY = report.Trunk.Height / WORLD_SPLITS;
+
             entityTeam.Color = Color.PeachPuff;
             if (entityTeam.TeamMembers.Length == 0) return;
 
@@ -266,6 +224,21 @@ namespace IntelligentRobots.TeamAlek
         {
 
             subDelegates.Clear();
+        }
+
+        internal void sendWinPoint(Vector2 vector2)
+        {
+            winPoint = vector2;
+        }
+
+        internal void sendSeekerThreat(Vector2 vector2)
+        {
+            //throw new NotImplementedException();
+        }
+
+        internal void sendHunterThreat(Vector2 vector2)
+        {
+            //throw new NotImplementedException();
         }
     }
 }
