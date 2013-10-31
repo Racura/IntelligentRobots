@@ -53,10 +53,9 @@ namespace IntelligentRobots.TeamKris
 
             float time = TeamDelegate.Report.TimeStamp - TeamDelegate.FactSheet.GetLastSightingTime(Order.TargetAsEntity);
 
-            if (_dirty || Vector2.DistanceSquared(Order.TargetAsEntity.position + Order.TargetAsEntity.velocity * time, GoToPoint) > 16 * 16)
+            if (_dirty || Vector2.DistanceSquared(Order.TargetAsEntity.position + Order.TargetAsEntity.velocity * time, GoToPoint) > 16 * 16) 
             {
                 TrySetPath(Order.TargetAsEntity.position, TeamDelegate.Report.Trunk);
-
                 CurrentJobCost = Order.DistanceToTargetSquared(Entity.Position) * 2;
             }
 
@@ -64,7 +63,6 @@ namespace IntelligentRobots.TeamKris
             {
                 FollowPath();
             }
-
         }
 
 

@@ -111,6 +111,11 @@ namespace IntelligentRobots.TeamKris
             return true;
         }
 
+        /// <summary>
+        /// This find out 
+        /// </summary>
+        /// <param name="order">A subdelegate has taken the order</param>
+        /// <returns></returns>
         public bool AskTeam(DelegateOrder order)
         {
             float bid = 0;
@@ -120,7 +125,7 @@ namespace IntelligentRobots.TeamKris
             {
                 float tmp = 0;
 
-                if (e.Order != null && e.Order.IsDuplicate(order))
+                if (e.Order != null && e.Order.IsDuplicate(order)) // order exist already
                 {
                     return false;
                 }
